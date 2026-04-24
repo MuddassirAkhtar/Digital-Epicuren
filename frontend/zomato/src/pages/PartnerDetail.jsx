@@ -25,7 +25,7 @@ const PartnerDetail = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/api/cart/add",
+        "https://digital-epicuren.onrender.com/api/cart/add",
         {
           foodItemId: item._id,
           quantity: 1,
@@ -48,7 +48,7 @@ const PartnerDetail = () => {
     async function getPartnersByID() {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/food/partner/${partnerId}`,
+          `https://digital-epicuren.onrender.com/api/food/partner/${partnerId}`,
           {},
         );
           // console.log(response.data);
@@ -71,7 +71,7 @@ const PartnerDetail = () => {
     async function getMenue() {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/food/menue/${partnerId}`,
+          `https://digital-epicuren.onrender.com/api/food/menue/${partnerId}`,
           {},
         );
 
@@ -97,7 +97,7 @@ const PartnerDetail = () => {
     async function getReelCount() {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/food/reelcount/${partnerId}`
+          `https://digital-epicuren.onrender.com/api/food/reelcount/${partnerId}`
         );
         setReelCount(res.data.data);
       } catch (err) {

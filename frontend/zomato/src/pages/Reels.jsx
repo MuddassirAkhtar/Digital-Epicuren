@@ -56,7 +56,7 @@ const Reels = () => {
 
     async function fetchReels() {
       try {
-        const response = await axios.get("http://localhost:3000/api/food/reels");
+        const response = await axios.get("https://digital-epicuren.onrender.com/api/food/reels");
         setReels(response.data.data);
       } catch (err) {
         console.log(err);

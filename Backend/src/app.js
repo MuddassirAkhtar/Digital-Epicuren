@@ -6,7 +6,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://digital-epicuren-1.onrender.com",
   credentials: true,
 }));
 // 🔥 REQUIRED middlewares

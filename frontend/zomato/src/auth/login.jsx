@@ -19,7 +19,7 @@ const Login = () => {
     setError('');
 
     const response = await axios.post(
-      'http://localhost:3000/api/user/login',
+      'https://digital-epicuren.onrender.com/api/user/login',
       { email, password },
       { withCredentials: true }
     );

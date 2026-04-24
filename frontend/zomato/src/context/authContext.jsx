@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:3000/api/user/me",
+          "https://digital-epicuren.onrender.com/api/user/me",
           { withCredentials: true }
         );
 

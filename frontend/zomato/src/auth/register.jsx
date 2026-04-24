@@ -69,8 +69,8 @@ const handleSubmit = async (e) => {
 
     const url =
       dataToSend.userType === 'customer'
-        ? 'http://localhost:3000/api/user/register'
-        : 'http://localhost:3000/api/user/foodpartener/register';
+        ? 'https://digital-epicuren.onrender.com/api/user/register'
+        : 'https://digital-epicuren.onrender.com/api/user/foodpartener/register';
 
     await axios.post(url, dataToSend);
 

@@ -75,7 +75,7 @@ const ReelCard = ({ reel, index }) => {
 //       setLikeCount((prevCount) => (newLiked ? prevCount + 1 : prevCount - 1));
 
 //       // API call
-//       const response = await axios.post("http://localhost:3000/api/food/likes", {
+//       const response = await axios.post("https://digital-epicuren.onrender.com/api/food/likes", {
 //         foodId: reel._id,
 //         userId: user._id,
 //       });
@@ -113,7 +113,7 @@ const ReelCard = ({ reel, index }) => {
     try {
       // Fetch the food item details
       const response = await axios.get(
-        `http://localhost:3000/api/food/fooditem/${reel.foodItemId}`
+        `https://digital-epicuren.onrender.com/api/food/fooditem/${reel.foodItemId}`
       );
 
       const itemData = response.data.data;
@@ -130,7 +130,7 @@ const ReelCard = ({ reel, index }) => {
 
       // Add to backend cart
       await axios.post(
-        "http://localhost:3000/api/cart/add",
+        "https://digital-epicuren.onrender.com/api/cart/add",
         {
           foodItemId: itemData._id,
           quantity: 1,

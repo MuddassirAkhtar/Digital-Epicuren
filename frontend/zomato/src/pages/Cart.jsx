@@ -13,7 +13,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/cart/", {
+        const response = await axios.get("https://digital-epicuren.onrender.com/api/cart/", {
           withCredentials: true,
         });
         setCart(response.data.items);
@@ -29,7 +29,7 @@ const Cart = () => {
   const handleRemoveFromCart = async (foodItemId) => {
     try {
       await axios.post(
-        "http://localhost:3000/api/cart/remove",
+        "https://digital-epicuren.onrender.com/api/cart/remove",
         {
           foodItemId,
         },
@@ -48,7 +48,7 @@ const Cart = () => {
   const handleClearCart = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/api/cart/clear",
+        "https://digital-epicuren.onrender.com/api/cart/clear",
         {},
         {
           withCredentials: true,
@@ -63,7 +63,7 @@ const Cart = () => {
   const handleIncreaseQuantity = async (foodItemId, currentQuantity) => {
     try {
       await axios.post(
-        "http://localhost:3000/api/cart/add",
+        "https://digital-epicuren.onrender.com/api/cart/add",
         {
           foodItemId,
           quantity: 1,
@@ -93,7 +93,7 @@ const Cart = () => {
     }
     try {
       await axios.post(
-        "http://localhost:3000/api/cart/decrease",
+        "https://digital-epicuren.onrender.com/api/cart/decrease",
         {
           foodItemId,
         },
@@ -122,7 +122,7 @@ const Cart = () => {
 
     // ✅ Step 1: Call backend (create order + razorpay order)
     const { data } = await axios.post(
-      "http://localhost:3000/api/payment/checkout",
+      "https://digital-epicuren.onrender.com/api/payment/checkout",
       {
         orderedItems: cart.map((item) => ({
           menuId: item.foodItemId._id,
@@ -144,7 +144,7 @@ const Cart = () => {
       handler: async function (response) {
         try {
           await axios.post(
-            "http://localhost:3000/api/payment/verify",
+            "https://digital-epicuren.onrender.com/api/payment/verify",
             {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,

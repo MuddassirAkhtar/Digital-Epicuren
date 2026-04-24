@@ -100,6 +100,8 @@ export default {
   },
   plugins: [
     // Touch-friendly form inputs
+      require('tailwind-scrollbar'),
+
     ({ addBase, theme }) => {
       addBase({
         '@media (hover: none) and (pointer: coarse)': {
@@ -130,6 +132,7 @@ export default {
           paddingLeft: 'env(safe-area-inset-left, 0)',
           paddingRight: 'env(safe-area-inset-right, 0)',
         },
+       
       })
     },
   ],

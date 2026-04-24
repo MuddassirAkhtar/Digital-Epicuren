@@ -1,98 +1,141 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { partners } from '../data/partners'
-import { useCart } from '../context/CartContext'
 
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import ReelCard from "../components/ReelCard";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router";
+
+
+/* ─── Main Reels Page ─────────────────────────────────────────────────────── */
 const Reels = () => {
-  const { addToCart } = useCart()
+  const [reels, setReels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { reelId } = useParams();
+  const navigate = useNavigate();
+  const scrollContainerRef = useRef(null);
 
-  return (
-    <div className="min-h-screen bg-gray-50 pb-24">
-      <div className="bg-white border-b sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-orange-600">Reel Feed</p>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Scroll partner food reels</h1>
-          </div>
-          <Link
-            to="/partners"
-            className="inline-flex items-center justify-center rounded-full bg-orange-600 text-white px-4 py-2 text-sm font-semibold shadow-lg hover:bg-orange-700 transition-colors"
-          >
-            Browse Partners
-          </Link>
-        </div>
+  const handleReelChange = (direction) => {
+    if (!reels.length) return;
+    
+    const currentIndex = reels.findIndex(r => r._id === reelId);
+    let nextIndex;
+    
+    if (direction === 'next') {
+      nextIndex = (currentIndex + 1) % reels.length;
+    } else if (direction === 'prev') {
+      nextIndex = currentIndex === 0 ? reels.length - 1 : currentIndex - 1;
+    } else {
+      return;
+    }
+    
+    navigate(`/reel/${reels[nextIndex]._id}`, { replace: true });
+  };
+
+  // Scroll to the reel when reelId changes
+  useEffect(() => {
+    if (!reelId || !reels.length || !scrollContainerRef.current) return;
+    
+    const currentIndex = reels.findIndex(r => r._id === reelId);
+    if (currentIndex === -1) return;
+    
+    setTimeout(() => {
+      const scrollTop = currentIndex * window.innerHeight;
+      scrollContainerRef.current?.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
+      });
+    }, 0);
+  }, [reelId, reels]);
+
+  useEffect(() => {
+    /* Load Bebas Neue for that bold short-form caption vibe */
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap";
+    document.head.appendChild(link);
+
+    async function fetchReels() {
+      try {
+        const response = await axios.get("http://localhost:3000/api/food/reels");
+        setReels(response.data.data);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchReels();
+  }, []);
+
+
+
+ 
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-black gap-3">
+        <div
+          className="w-10 h-10 rounded-full border-4 border-t-transparent animate-spin"
+          style={{ borderColor: "#FF6B35 transparent transparent transparent" }}
+        />
+        <p className="text-gray-400 text-sm">Loading Reels…</p>
       </div>
+    );
+  }
 
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        {partners.map((partner) => {
-          const featuredItem = partner.menu[0]
-          return (
-            <article
-              key={partner.id}
-              className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm"
-            >
-              <div className="relative aspect-[16/9] bg-gray-900">
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(https://images.unsplash.com/featured/?${encodeURIComponent(
-                      partner.name
-                    )}+food)`
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/90 text-gray-900 text-4xl shadow-2xl">
-                    ▶
-                  </div>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <p className="text-xs uppercase tracking-[0.3em] text-orange-300">{partner.location}</p>
-                  <h2 className="text-3xl font-bold leading-tight">{partner.reel}</h2>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900">{partner.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{partner.description}</p>
-                  </div>
-                  <span className="inline-flex rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-600">
-                    Reel
-                  </span>
-                </div>
-
-                <p className="text-gray-600">{partner.reelDescription}</p>
-
-                <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-                  <button
-                    onClick={() =>
-                      addToCart({
-                        id: `${partner.id}-${featuredItem.id}`,
-                        title: featuredItem.title,
-                        price: featuredItem.price,
-                        partnerName: partner.name
-                      })
-                    }
-                    className="w-full rounded-2xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-700 transition-colors"
-                  >
-                    Add {featuredItem.title} to cart
-                  </button>
-                  <Link
-                    to={`/partners/${partner.id}`}
-                    className="inline-flex items-center justify-center rounded-2xl border border-orange-600 px-5 py-3 text-sm font-semibold text-orange-600 hover:bg-orange-50 transition-colors"
-                  >
-                    View Partner
-                  </Link>
-                </div>
-              </div>
-            </article>
-          )
-        })}
+  if (!reels.length) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-black">
+        <p className="text-gray-500 text-sm">No reels available right now.</p>
       </div>
+    );
+  }
+
+
+
+
+   return (
+    <div className="h-screen w-full flex items-center justify-center bg-black">
+      <div
+      ref={scrollContainerRef}
+      className="h-screen w-full md:w-1/3 overflow-y-scroll snap-y snap-mandatory "
+      style={{ scrollbarWidth: "none" }}
+    >
+      <style>{`
+        ::-webkit-scrollbar { display: none; }
+      `}</style>
+      {reels.map((reel, i) => (
+        <ReelCard key={reel._id} reel={reel} index={i} />
+      ))}
     </div>
-  )
-}
 
-export default Reels
+    <div className="hidden md:block absolute top-1/2 -translate-y-1/2 right-20 text-gray-400">
+    
+    <div className="flex flex-col items-center gap-5 rounded-full p-2">
+
+      <div className="rounded-full p-2  cursor-pointer" style={{ background: "rgba(255,255,255,0.1)" }}
+       onClick={() => handleReelChange('prev')}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+      </svg>
+      </div>
+
+       <div className="rounded-full p-2  cursor-pointer" style={{ background: "rgba(255,255,255,0.1)" }} 
+               onClick={() => handleReelChange('next')}
+       >
+        {/* Down Arrow */}
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1 rotate-270" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+      </svg>
+       </div>
+    </div>
+
+    </div>
+    </div>
+  );
+}
+ 
+
+
+export default Reels;

@@ -1,206 +1,87 @@
-// import React, { useState } from 'react'
-// import { Link } from 'react-router-dom'
-// import { partners } from '../data/partners'
-
-// const Home = () => {
-//   const [email, setEmail] = useState('')
-// console.log("Home component rendered")
-//   return (
-//     <div className="min-h-screen bg-white text-gray-900">
-//       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-//         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-//           <Link to="/" className="flex items-center gap-3">
-//             <div className="w-12 h-12 rounded-3xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
-//               <span className="text-2xl">🍽️</span>
-//             </div>
-//             <div>
-//               <p className="text-sm uppercase tracking-[0.35em] text-orange-600">Digital Epicurean</p>
-//               <h1 className="text-xl font-bold">Food reels & orders</h1>
-//             </div>
-//           </Link>
-
-//           <div className="flex items-center gap-3">
-//             <Link to="/login" className="hidden sm:inline-flex items-center px-5 py-2 rounded-full text-sm font-semibold text-orange-600 border border-orange-200 hover:bg-orange-50 transition">
-//               Sign In
-//             </Link>
-//             <Link to="/register" className="inline-flex items-center px-5 py-2 rounded-full bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700 transition">
-//               Sign Up
-//             </Link>
-//           </div>
-//         </div>
-//       </header>
-
-//       <main className="pb-24">
-//         <section className="bg-gradient-to-br from-orange-50 via-white to-orange-50 py-12 sm:py-16">
-//           <div className="max-w-7xl mx-auto px-4 grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
-//             <div className="space-y-8">
-//               <div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
-//                 <span className="h-2.5 w-2.5 rounded-full bg-orange-600" />
-//                 Explore chef-curated reels
-//               </div>
-//               <div className="space-y-4">
-//                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">
-//                   Discover food through <span className="text-orange-600">videos</span>.
-//                 </h2>
-//                 <p className="max-w-2xl text-gray-600 leading-relaxed">
-//                   Experience the culture, the aroma, and the story of every cuisine through short, delicious food clips.
-//                 </p>
-//               </div>
-
-//               <div className="flex flex-col sm:flex-row gap-4">
-//                 <Link to="/partners" className="inline-flex items-center justify-center rounded-full bg-orange-600 px-8 py-4 text-sm font-semibold text-white shadow-lg hover:bg-orange-700 transition">
-//                   Explore Food
-//                 </Link>
-//                 <Link to="/register" className="inline-flex items-center justify-center rounded-full border border-orange-600 px-8 py-4 text-sm font-semibold text-orange-600 hover:bg-orange-50 transition">
-//                   Become a Partner
-//                 </Link>
-//               </div>
-
-//               <div className="grid grid-cols-3 gap-4 text-center text-sm text-gray-600">
-//                 <div>
-//                   <p className="text-2xl font-bold text-orange-600">500+</p>
-//                   <p>Restaurants</p>
-//                 </div>
-//                 <div>
-//                   <p className="text-2xl font-bold text-orange-600">50K+</p>
-//                   <p>Active Users</p>
-//                 </div>
-//                 <div>
-//                   <p className="text-2xl font-bold text-orange-600">1M+</p>
-//                   <p>Orders</p>
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="rounded-[2rem] overflow-hidden bg-white shadow-2xl ring-1 ring-black/5">
-//               <div className="relative aspect-[16/9] bg-slate-900">
-//                 <img
-//                   src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80"
-//                   alt="Featured food"
-//                   className="absolute inset-0 h-full w-full object-cover"
-//                 />
-//                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-//                 <div className="absolute inset-0 flex items-end p-6">
-//                   <div className="rounded-3xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur-sm">
-//                     <p className="text-xs uppercase tracking-[0.35em] text-orange-600">Featured Food</p>
-//                     <h3 className="mt-2 text-2xl font-bold text-slate-900">The Intal Wood Fired Neapolitan Pizza</h3>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-
-//         <section className="py-10 sm:py-14">
-//           <div className="max-w-7xl mx-auto px-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-//             <div>
-//               <p className="text-sm uppercase tracking-[0.35em] text-orange-600">Our Partners</p>
-//               <h2 className="mt-3 text-3xl font-bold text-gray-900">Trusted restaurant collections</h2>
-//             </div>
-//             <Link to="/partners" className="text-sm font-semibold text-orange-600 hover:text-orange-700">
-//               View All →
-//             </Link>
-//           </div>
-
-//           <div className="mt-8 max-w-7xl mx-auto px-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-//             {partners.map((partner) => (
-//               <Link
-//                 key={partner.id}
-//                 to={`/partners/${partner.id}`}
-//                 className="group overflow-hidden rounded-3xl bg-slate-950 text-white shadow-xl transition hover:-translate-y-1 hover:shadow-2xl"
-//               >
-//                 <div className="aspect-[4/3] bg-slate-900 flex items-end p-6" style={{ backgroundImage: `url(https://images.unsplash.com/featured/?${encodeURIComponent(partner.name)}+restaurant)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-//                   <div className="rounded-3xl bg-black/60 p-4">
-//                     <p className="text-xs uppercase tracking-[0.35em] text-orange-400">{partner.location}</p>
-//                     <h3 className="mt-2 text-xl font-bold">{partner.name}</h3>
-//                   </div>
-//                 </div>
-//                 <div className="space-y-3 p-6 bg-white text-slate-900">
-//                   <p className="text-sm text-slate-500">{partner.description}</p>
-//                   <div className="flex items-center gap-2 text-sm text-slate-500">
-//                     <span className="rounded-full bg-orange-50 px-3 py-1 text-orange-700">{partner.menu.length} menu items</span>
-//                     <span className="font-semibold text-orange-600">View Reel →</span>
-//                   </div>
-//                 </div>
-//               </Link>
-//             ))}
-//           </div>
-//         </section>
-
-//         <section className="py-12 bg-slate-950 text-white">
-//           <div className="max-w-7xl mx-auto px-4 rounded-[2rem] bg-gradient-to-r from-orange-600 to-orange-500 p-10 shadow-2xl">
-//             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-//               <div>
-//                 <p className="text-sm uppercase tracking-[0.35em] text-orange-200">Are you a chef?</p>
-//                 <h2 className="mt-4 text-4xl font-bold">Create your own restaurant page and grow with video orders.</h2>
-//                 <p className="mt-4 max-w-xl text-orange-100/90 leading-relaxed">
-//                   Showcase signature dishes, share food reels, and connect with customers directly through the Digital Epicurean partner experience.
-//                 </p>
-//               </div>
-//               <div className="flex items-center justify-center">
-//                 <Link to="/register" className="rounded-full bg-white px-8 py-4 text-sm font-semibold text-orange-600 shadow-lg hover:bg-orange-50 transition">
-//                   Join as Partner
-//                 </Link>
-//               </div>
-//             </div>
-//           </div>
-//         </section>
-//       </main>
-//     </div>
-//   )
-// }
-
-// export default Home
-
-
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { partners } from '../data/partners'
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+// import { partners } from "../data/partners";
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState("");
+  const [partners, setPartners] = useState([]);
+  const { user, setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:3000/api/user/logout", {
+        withCredentials: true,
+      });
+      setUser(null); // Clear user from context
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   const restaurants = [
     {
       id: 1,
-      name: 'Gourmet Burgers',
-      image: '🍔',
-      description: 'Premium beef burgers with fresh ingredients',
+      name: "Gourmet Burgers",
+      image: "🍔",
+      description: "Premium beef burgers with fresh ingredients",
       rating: 4.8,
-      reviews: 2543
+      reviews: 2543,
     },
     {
       id: 2,
-      name: 'Asian Fusion',
-      image: '🍜',
-      description: 'Traditional Asian cuisine with modern twist',
+      name: "Asian Fusion",
+      image: "🍜",
+      description: "Traditional Asian cuisine with modern twist",
       rating: 4.9,
-      reviews: 1876
+      reviews: 1876,
     },
     {
       id: 3,
-      name: 'Artisan Pizza',
-      image: '🍕',
-      description: 'Authentic wood-fired pizzas',
+      name: "Artisan Pizza",
+      image: "🍕",
+      description: "Authentic wood-fired pizzas",
       rating: 4.7,
-      reviews: 3421
-    }
-  ]
+      reviews: 3421,
+    },
+  ];
 
   const cuisines = [
-    { id: 1, name: 'Italian', icon: '🇮🇹', count: 245 },
-    { id: 2, name: 'Asian', icon: '🥢', count: 189 },
-    { id: 3, name: 'American', icon: '🍔', count: 167 },
-    { id: 4, name: 'Mexican', icon: '🌮', count: 134 },
-    { id: 5, name: 'Indian', icon: '🧂', count: 201 },
-    { id: 6, name: 'Mediterranean', icon: '🫒', count: 98 }
-  ]
+    { id: 1, name: "Italian", icon: "🇮🇹", count: 245 },
+    { id: 2, name: "Asian", icon: "🥢", count: 189 },
+    { id: 3, name: "American", icon: "🍔", count: 167 },
+    { id: 4, name: "Mexican", icon: "🌮", count: 134 },
+    { id: 5, name: "Indian", icon: "🧂", count: 201 },
+    { id: 6, name: "Mediterranean", icon: "🫒", count: 98 },
+  ];
+
+  useEffect(() => {
+    async function getPartners() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/food/partners",
+        );
+        setPartners(response.data.data);
+        // console.log(partners);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    getPartners();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white pb-24">
       {/* Navigation Header */}
       <header className="sticky top-0 z-50 bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          {/* LEFT SIDE (Always visible) */}
           <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
               <span className="text-xl font-bold text-white">🍽️</span>
@@ -209,20 +90,38 @@ const Home = () => {
               Digital Epicurean
             </h1>
           </Link>
-          
+
+          {/* RIGHT SIDE (Dynamic) */}
           <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="hidden sm:inline-block px-6 py-2 text-orange-600 font-semibold hover:text-orange-700 transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="px-4 sm:px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold rounded-lg hover:from-orange-700 hover:to-orange-800 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
-            >
-              Sign Up
-            </Link>
+            {user ? (
+              <>
+                <span className="hidden sm:block font-medium text-gray-700">
+                  Hi, {user?.fullName.split(" ")[0] }!
+                </span>
+
+                <button
+                  onClick={handleLogout}
+                  className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="hidden sm:inline-block px-6 py-2 text-orange-600 font-semibold hover:text-orange-700 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 sm:px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold rounded-lg hover:from-orange-700 hover:to-orange-800 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -234,12 +133,17 @@ const Home = () => {
             {/* Left Content */}
             <div className="space-y-6">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Discover food through <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">videos</span>
+                Discover food through{" "}
+                <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                  videos
+                </span>
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Experience culinary excellence with our curated collection of restaurants. Watch cooking videos, read reviews, and order your favorite meals.
+                Experience culinary excellence with our curated collection of
+                restaurants. Watch cooking videos, read reviews, and order your
+                favorite meals.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/register"
@@ -293,7 +197,9 @@ const Home = () => {
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               Explore Trending Restaurants
             </h3>
-            <p className="text-gray-600">Discover our hand-picked selection of finest dining establishments</p>
+            <p className="text-gray-600">
+              Discover our hand-picked selection of finest dining establishments
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -321,8 +227,12 @@ const Home = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-1">
                       <span className="text-lg">⭐</span>
-                      <span className="font-bold text-gray-900">{restaurant.rating}</span>
-                      <span className="text-sm text-gray-600">({restaurant.reviews.toLocaleString()})</span>
+                      <span className="font-bold text-gray-900">
+                        {restaurant.rating}
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        ({restaurant.reviews.toLocaleString()})
+                      </span>
                     </div>
                   </div>
 
@@ -353,9 +263,7 @@ const Home = () => {
                 key={cuisine.id}
                 className="group p-6 bg-white rounded-xl shadow-md hover:shadow-lg hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 text-center"
               >
-                <div className="text-5xl mb-3">
-                  {cuisine.icon}
-                </div>
+                <div className="text-5xl mb-3">{cuisine.icon}</div>
                 <h4 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
                   {cuisine.name}
                 </h4>
@@ -373,8 +281,12 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Our Partners</h3>
-              <p className="text-gray-600">Trusted by the best restaurants and chefs.</p>
+              <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                Our Partners
+              </h3>
+              <p className="text-gray-600">
+                Trusted by the best restaurants and chefs.
+              </p>
             </div>
             <Link
               to="/partners"
@@ -385,21 +297,19 @@ const Home = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {partners.slice(0, 4).map((partner) => (
+            {partners.slice(3, 7).map((partner) => (
               <Link
-                key={partner.id}
-                to={`/partners/${partner.id}`}
+                key={partner._id}
+                to={`/partners/${partner._id}`}
                 className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-md hover:shadow-lg hover:from-orange-50 hover:to-orange-100 transition-all duration-300 transform hover:scale-105 text-center group"
               >
                 <div className="text-6xl mb-4 group-hover:scale-125 transition-transform">
-                  {partner.icon}
+                  {partner.icon} 🍽️
                 </div>
                 <h4 className="text-xl font-bold text-gray-900 mb-2">
-                  {partner.name}
+                  {partner.restaurantName}
                 </h4>
-                <p className="text-sm text-gray-600">
-                  {partner.description}
-                </p>
+                <p className="text-sm text-gray-600">{partner.description} "A place where great food meets great vibes."   </p>
               </Link>
             ))}
           </div>
@@ -423,7 +333,9 @@ const Home = () => {
                 Are you a Chef?
               </h3>
               <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-                Join thousands of talented chefs already partnering with Digital Epicurean. Grow your culinary brand and reach food lovers worldwide.
+                Join thousands of talented chefs already partnering with Digital
+                Epicurean. Grow your culinary brand and reach food lovers
+                worldwide.
               </p>
             </div>
 
@@ -431,25 +343,34 @@ const Home = () => {
             <div className="space-y-6">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all">
                 <div className="text-3xl mb-3">📈</div>
-                <h4 className="text-xl font-bold text-white mb-2">Grow Your Reach</h4>
+                <h4 className="text-xl font-bold text-white mb-2">
+                  Grow Your Reach
+                </h4>
                 <p className="text-gray-300">
-                  Access thousands of potential customers and expand your business
+                  Access thousands of potential customers and expand your
+                  business
                 </p>
               </div>
 
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all">
                 <div className="text-3xl mb-3">💰</div>
-                <h4 className="text-xl font-bold text-white mb-2">Competitive Rates</h4>
+                <h4 className="text-xl font-bold text-white mb-2">
+                  Competitive Rates
+                </h4>
                 <p className="text-gray-300">
-                  Earn more with our fair commission structure and flexible payment options
+                  Earn more with our fair commission structure and flexible
+                  payment options
                 </p>
               </div>
 
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all">
                 <div className="text-3xl mb-3">🎯</div>
-                <h4 className="text-xl font-bold text-white mb-2">Marketing Support</h4>
+                <h4 className="text-xl font-bold text-white mb-2">
+                  Marketing Support
+                </h4>
                 <p className="text-gray-300">
-                  Get featured with our video marketing and promotional campaigns
+                  Get featured with our video marketing and promotional
+                  campaigns
                 </p>
               </div>
 
@@ -471,7 +392,8 @@ const Home = () => {
             Stay Updated
           </h3>
           <p className="text-gray-600 mb-8">
-            Get exclusive deals, new restaurant launches, and culinary tips delivered to your inbox
+            Get exclusive deals, new restaurant launches, and culinary tips
+            delivered to your inbox
           </p>
 
           <form className="flex flex-col sm:flex-row gap-3">
@@ -510,7 +432,8 @@ const Home = () => {
                 <span className="font-bold text-white">Digital Epicurean</span>
               </div>
               <p className="text-sm">
-                Discover culinary excellence through videos and authentic food experiences.
+                Discover culinary excellence through videos and authentic food
+                experiences.
               </p>
             </div>
 
@@ -518,10 +441,38 @@ const Home = () => {
             <div>
               <h5 className="font-bold text-white mb-4">Company</h5>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-orange-500 transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Press</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Careers
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Press
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -529,10 +480,38 @@ const Home = () => {
             <div>
               <h5 className="font-bold text-white mb-4">Support</h5>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">FAQs</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Safety</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Help Center
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    FAQs
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Safety
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -540,10 +519,38 @@ const Home = () => {
             <div>
               <h5 className="font-bold text-white mb-4">Legal</h5>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Cookie Policy</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors">Accessibility</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Cookie Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-orange-500 transition-colors"
+                  >
+                    Accessibility
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -573,7 +580,7 @@ const Home = () => {
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

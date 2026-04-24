@@ -11,11 +11,15 @@ import Reels from '../pages/Reels'
 import Cart from '../pages/Cart'
 import BottomNavigation from '../components/BottomNavigation'
 import { CartProvider } from '../context/CartContext'
+import ProtectedRoute from './ProtectedRoute'
+import { AuthContext } from '../context/authContext'
+
 
 const AppRoutes = () => {
   const location = useLocation()
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register'
-
+  const isReelsPage = location.pathname.startsWith('/reel')
+ const user = React.useContext(AuthContext).user
   return (
     <CartProvider>
       <>
@@ -26,11 +30,19 @@ const AppRoutes = () => {
           <Route path='/profile' element={<Profile />} />
           <Route path='/partners' element={<Partners />} />
           <Route path='/partners/:partnerId' element={<PartnerDetail />} />
-          <Route path='/partners/:partnerId/dashboard' element={<PartnerDashboard />} />
-          <Route path='/reels' element={<Reels />} />
+<Route
+  path='/partners/:partnerId/dashboard'
+  element={
+    <ProtectedRoute user={user}>
+      <PartnerDashboard />
+    </ProtectedRoute>
+  }
+/>          
+        <Route path='/reels' element={<Reels />} />
+          <Route path='/reel/:reelId' element={<Reels />} />
           <Route path='/cart' element={<Cart />} />
         </Routes>
-        {!isAuthPage && <BottomNavigation />}
+        {!isAuthPage && !isReelsPage && <BottomNavigation />}
       </>
     </CartProvider>
   )

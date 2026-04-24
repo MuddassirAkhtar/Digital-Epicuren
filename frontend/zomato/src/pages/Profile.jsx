@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState ,useContext, useEffect} from 'react'
 import { Link } from 'react-router-dom'
+import { AuthContext } from '../context/authContext'
 
 const Profile = () => {
+  const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('personal')
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
-    name: 'Alex Rivera',
-    email: 'alex.rivera@example.com',
-    phone: '+1 (415) 555-0132',
-    location: 'San Francisco, CA',
-    dob: '1995-08-15'
-  })
+  name: user?.fullName || "",
+  email: user?.email || '',
+})
 
+
+  console.log(user)
   const [editData, setEditData] = useState(formData)
 
   const paymentMethods = [
@@ -42,6 +43,23 @@ const Profile = () => {
     setIsEditing(false)
   }
 
+
+
+useEffect(() => {
+  if (user) {
+    setFormData({
+      name: user.fullName || "",
+      email: user.email || ""
+    });
+
+    setEditData({
+      name: user.fullName || "",
+      email: user.email || ""
+    });
+  }
+}, [user]);
+
+// console.log(user)
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
@@ -66,10 +84,9 @@ const Profile = () => {
             {/* User Info */}
             <div className="flex-1">
               <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                {formData.name}
+                  {user?.fullName || "User"}
               </h2>
-              <p className="text-sm text-gray-600 mb-1">📍 {formData.location}</p>
-              <p className="text-xs text-gray-500">Joined March 2021 • Member for 3+ years</p>
+              {/* <p className="text-sm text-gray-600 mb-1">📍 {formData.location}</p> */}
             </div>
           </div>
 
@@ -141,12 +158,15 @@ const Profile = () => {
                       <p className="text-lg text-gray-900">{formData.email}</p>
                     </div>
 
-                    <div className="pb-4 border-b">
-                      <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Phone Number</p>
-                      <p className="text-lg text-gray-900">{formData.phone}</p>
-                    </div>
+
+                    {/*  to be added after otp part  */}
 
                     <div className="pb-4 border-b">
+                      <p className="text-xs font-semibold text-gray-900 uppercase mb-2">Phone Number</p>
+                      <p className="text-lg text-gray-300">"/*  to be added after otp part  */"</p>
+                    </div>
+
+                    {/* <div className="pb-4 border-b">
                       <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Location</p>
                       <p className="text-lg text-gray-900">{formData.location}</p>
                     </div>
@@ -160,11 +180,15 @@ const Profile = () => {
                           day: 'numeric'
                         })}
                       </p>
-                    </div>
+                    </div> */}
                   </div>
 
                   <button
-                    onClick={() => setIsEditing(true)}
+
+                    onClick={() => {
+                      setEditData(formData); // sync latest data
+                      setIsEditing(true);
+                    }}
                     className="w-full py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold rounded-lg hover:from-orange-700 hover:to-orange-800 transition-all transform hover:scale-105 active:scale-95"
                   >
                     Edit Information
@@ -183,7 +207,7 @@ const Profile = () => {
                         name="name"
                         value={editData.name}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
 
@@ -196,11 +220,11 @@ const Profile = () => {
                         name="email"
                         value={editData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase">
                         Phone Number
                       </label>
@@ -209,11 +233,11 @@ const Profile = () => {
                         name="phone"
                         value={editData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                       />
-                    </div>
+                    </div> */}
 
-                    <div>
+                    {/* <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase">
                         Location
                       </label>
@@ -222,11 +246,11 @@ const Profile = () => {
                         name="location"
                         value={editData.location}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                       />
-                    </div>
+                    </div> */}
 
-                    <div>
+                    {/* <div>
                       <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase">
                         Date of Birth
                       </label>
@@ -235,9 +259,9 @@ const Profile = () => {
                         name="dob"
                         value={editData.dob}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">

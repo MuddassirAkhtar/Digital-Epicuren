@@ -1,8 +1,36 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { partners } from '../data/partners'
+// import { partners } from '../data/partners'
+import { useEffect } from 'react'
+import axios from "axios"
+import { get } from 'react-hook-form'
+
+
+
+
 
 const Partners = () => {
+
+  const [partners, setPartners] = React.useState([])
+
+  useEffect(() => {
+
+  async function getAllPartners (){
+    
+   try{
+     const  response = await axios.get("http://localhost:3000/api/food/partners",{
+      withCredentials:true
+    })
+    console.log(response.data)
+      const data = response.data.data;
+      setPartners(data);
+   }catch(err){
+      console.log(err)
+   }
+  }
+
+ getAllPartners()
+}, [])
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       <div className="bg-white border-b sticky top-0 z-30">
@@ -35,10 +63,10 @@ const Partners = () => {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {partners.map((partner) => (
+          {partners?.map((partner, index) => (
             <Link
-              key={partner.id}
-              to={`/partners/${partner.id}`}
+              key={index}
+              to={`/partners/${partner._id}`}
               className="group block overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300"
             >
               <div className="p-6">
@@ -46,10 +74,10 @@ const Partners = () => {
                   <span className="text-4xl">{partner.icon}</span>
                   <span className="px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-semibold">{partner.location}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-orange-600">{partner.name}</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-orange-600">{partner.restaurantName}</h3>
                 <p className="text-sm text-gray-600 mb-5">{partner.description}</p>
                 <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span className="font-semibold">{partner.menu.length} menu items</span>
+                  {/* <span className="font-semibold">{partner.menu.length} menu items</span> */}
                   <span className="text-orange-600 font-semibold">View Reel →</span>
                 </div>
               </div>

@@ -107,6 +107,10 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.noScrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Responsive Typography */
 @media (max-width: 768px) {
   html {

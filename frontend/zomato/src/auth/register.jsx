@@ -1,13 +1,16 @@
 import React, { useState } from 'react'
-import { set } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { toTitleCase } from '../utility/titleCase'
 
 const Register = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     fullName: '',
+    ownerName: '',
+    restaurantName: '',
+    location: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -26,61 +29,52 @@ const Register = () => {
     }))
   }
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault()
-    
-//     if (formData.password !== formData.confirmPassword) {
-//       setError('Passwords do not match')
-//       return
-//     }
-
-//     setLoading(true)
-//     // API call will go here
-//           async function registerUser(){
-//           try{
-//                     axios.post('/api/register', formData)
-
-//                     const userdata = await Response.data
-
-//                     console.log('Registration successful:', userdata)
-//                     navigate('/login')
-
-//           }catch(err){
-//                     console.log(err)
-//                     setError('Registration failed. Please try again.')
-//           }
-// }
-    
-//       return registerUser();
-
-    
-    
 
 
-//     setTimeout(() => setLoading(false), 1000)
-//   }
 
 
-console.log(formData);
 
 const handleSubmit = async (e) => {
   e.preventDefault();
 
-  if (formData.password !== formData.confirmPassword) {
+  let dataToSend = { ...formData };
+
+  // ✅ 1. Validate first
+  if (dataToSend.password !== dataToSend.confirmPassword) {
     setError('Passwords do not match');
     return;
   }
+
+  // ✅ 2. Then remove unnecessary fields
+  if (dataToSend.userType === 'customer') {
+    delete dataToSend.ownerName;
+    delete dataToSend.resturentName;
+    delete dataToSend.location;
+    dataToSend.fullName = toTitleCase(dataToSend.fullName);
+  }
+
+  if (dataToSend.userType === 'partner') {
+    delete dataToSend.fullName;
+    dataToSend.restaurantName = toTitleCase(dataToSend.restaurantName);
+    dataToSend.location = toTitleCase(dataToSend.location);
+    dataToSend.ownerName = toTitleCase(dataToSend.ownerName);
+  }
+
+  // ✅ 3. Always remove confirmPassword before sending
+  delete dataToSend.confirmPassword;
 
   try {
     setLoading(true);
     setError('');
 
-    const response = await axios.post('http://localhost:3000/api/user/register', formData);
+    const url =
+      dataToSend.userType === 'customer'
+        ? 'http://localhost:3000/api/user/register'
+        : 'http://localhost:3000/api/user/foodpartener/register';
 
-    console.log('Registration successful:', response.data);
+    await axios.post(url, dataToSend);
 
     navigate('/login');
-
   } catch (err) {
     console.error(err);
     setError(err.response?.data?.message || 'Registration failed');
@@ -171,17 +165,29 @@ const handleSubmit = async (e) => {
               {/* Name Field */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
-                  Full Name
+                 { formData.userType === 'customer' ? 'Full Name' : 'Owner Name' }
                 </label>
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-200 text-sm text-gray-900 placeholder-gray-400"
-                />
+                {formData.userType === 'customer' ? (
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="John Doe"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-200 text-sm text-gray-900 placeholder-gray-400"
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    name="ownerName"
+                    placeholder="John Doe"
+                    value={formData.ownerName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-200 text-sm text-gray-900 placeholder-gray-400"
+                  />
+                )}
               </div>
 
               {/* Email Field */}
@@ -250,6 +256,43 @@ const handleSubmit = async (e) => {
                 </div>
               </div>
 
+
+              {/* fields for resturent partener */}
+
+                {formData.userType === 'partner' && (
+                  <>
+                  <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                  Resturent Name
+                </label>
+                <input
+                  type="text"
+                  name="restaurantName"
+                  placeholder="Gourmet Delight"
+                  value={formData.restaurantName || ''}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-200 text-sm text-gray-900 placeholder-gray-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                  location
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="123 Main Street, City"
+                  value={formData.location || ''}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-200 text-sm text-gray-900 placeholder-gray-400"
+                />
+              </div>
+                  </>
+                )}
+
               {/* Terms Checkbox */}
               <div className="flex items-start gap-2">
                 <input
@@ -274,7 +317,6 @@ const handleSubmit = async (e) => {
               <button
                 type="submit"
                 disabled={loading}
-                onClick={handleSubmit}
                 className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold py-3.5 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg disabled:opacity-75 disabled:cursor-not-allowed text-sm md:text-base"
               >
                 {loading ? 'Creating Account...' : 'Create an Account'}

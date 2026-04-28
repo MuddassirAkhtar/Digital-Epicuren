@@ -35,7 +35,12 @@ async function registerUser(req, res) {
     process.env.SECRET_KEY,
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
   res.status(201).json({
     message: "user registered sucessfully",
@@ -80,7 +85,11 @@ async function registerUser(req, res) {
 // }
 
 async function logoutUser(req, res) {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
   res.status(200).json({
     message: "User LoggedOut Sucessfully",
   });
@@ -120,7 +129,12 @@ async function registerPartener(req, res) {
     process.env.SECRET_KEY,
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
   res.status(201).json({
     message: "partener registered sucessfully",
@@ -168,7 +182,11 @@ async function registerPartener(req, res) {
 // }
 
 async function logoutPartener(req, res) {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
   res.status(200).json({
     message: "User LoggedOut Sucessfully",
   });
@@ -235,7 +253,9 @@ async function login(req, res) {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({

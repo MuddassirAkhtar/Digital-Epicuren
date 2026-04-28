@@ -8,7 +8,7 @@ const app = express();
 app.use(cors({
    origin: [
       "http://localhost:5173", // Local frontend
-       "https://digital-epicuren-1.onrender.com/" 
+       "https://digital-epicuren-1.onrender.com" 
     ],
   credentials: true,
 }));

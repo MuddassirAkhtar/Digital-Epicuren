@@ -15,6 +15,18 @@ const userSchema = new mongoose.Schema({
           password:{
           type:String,
           },
+          phoneNumber:{
+            type:String,
+            required:true
+          },
+          isEmailVerified:{
+            type:Boolean,
+            default:false,
+          },
+          isPhoneNumberVerified:{
+            type:Boolean,
+            default:false,
+          },
           userType:{
             type:String,
             default:'coustomer',

@@ -18,7 +18,7 @@ const Partners = () => {
   async function getAllPartners (){
     
    try{
-     const  response = await axios.get("https://digital-epicuren.onrender.com/api/food/partners",{
+     const  response = await axios.get(`${import.meta.env.VITE_API_URL}/api/food/partners`,{
       withCredentials:true
     })
     console.log(response.data)

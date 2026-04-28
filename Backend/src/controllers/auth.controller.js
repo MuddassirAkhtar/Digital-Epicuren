@@ -2,9 +2,10 @@ const userModel = require("../models/user.model");
 const  partenerModel = require("../models/partener.model")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const otpService = require("../services/otp.service")
 
 async function registerUser(req, res) {
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, phoneNumber } = req.body;
 
   const isUserAlreadyExist = await userModel.findOne({
     email,
@@ -21,6 +22,7 @@ async function registerUser(req, res) {
   const user = await userModel.create({
     fullName,
     email,
+    phoneNumber,
     password: hashpassword,
   });
 
@@ -39,6 +41,7 @@ async function registerUser(req, res) {
       id: user._id,
       email: user.email,
       fullName: user.fullName,
+      phoneNumber: user.phoneNumber,
     },
   });
 }
@@ -84,7 +87,7 @@ async function logoutUser(req, res) {
 
 
 async function registerPartener(req, res) {
-  const { ownerName, restaurantName, location , email, password } = req.body;
+  const { ownerName, restaurantName, location , email, password , phoneNumber} = req.body;
 
   const isPartenerAlreadyExist = await  partenerModel.findOne({
     email,
@@ -103,6 +106,7 @@ async function registerPartener(req, res) {
     restaurantName,
     location,
     email,
+    phoneNumber,
 
     password: hashpassword,
   });
@@ -126,6 +130,7 @@ async function registerPartener(req, res) {
       ownerName: partener.ownerName,
       restaurantName: partener.restaurantName,
       location: partener.location,
+      phonNumber: partner.phoneNumber
       
     },
   });
@@ -218,6 +223,16 @@ async function login(req, res) {
       await user.save();
     }
 
+    // 📱 Send OTP to user's mobile number
+    try {
+      if (user.phoneNumber) {
+        await otpService.createVerification(user.phoneNumber);
+      }
+    } catch (otpErr) {
+      console.log("OTP sending failed:", otpErr);
+      // Continue with login even if OTP sending fails
+    }
+
     // create token with role
     const token = jwt.sign(
       { id: user._id, role },
@@ -230,7 +245,7 @@ async function login(req, res) {
     });
 
     res.status(200).json({
-      message: "Login Successful",
+      message: "Login Successful. OTP sent to registered mobile number.",
       user: {
         id: user._id,
         fullName: user.fullName || user.ownerName,
@@ -307,11 +322,104 @@ async function getMe(req, res) {
   });
 }
 
+async function sendOtp(req,res){
+
+  const {email} = req.body;
+
+let role = null;
+let partener = null
+
+const user = await userModel.findOne({email});
+role = "user"
+
+if(!user){
+  partener = await partenerModel.findOne({email})
+  role= "partner"
+}
+
+console.log(user.phoneNumber)
+
+    
+try{
+
+  role == "user" ? otpService.createVerification(user.phoneNumber)
+                  :otpService.createVerification(partener.phoneNumber)
+  
+
+
+}catch(err){
+  console.log(err)
+  return res.status(500).json({"message": "failed to send otp "})
+}
+
+res.status(200).json({"mesage": "otp sent Sucessfully"})
+
+}
+
+async function verifyOtp(req, res) {
+  const { email, otp } = req.body;
+
+  console.log(email, otp);
+
+  let partner = null;
+  let role = null;
+
+  const user = await userModel.findOne({ email });
+
+  if (user) {
+    role = "user";
+  } else {
+    partner = await partenerModel.findOne({ email });
+
+    if (partner) {
+      role = "partner";
+    } else {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+  }
+
+  try {
+    const verification =
+      role === "user"
+        ? await otpService.createVerificationCheck(otp, user.phoneNumber)
+        : await otpService.createVerificationCheck(otp, partner.phoneNumber);
+
+    if (verification.status === "approved") {
+      if (role === "user") {
+        user.isPhoneNumberVerified = true;
+        await user.save();
+      } else {
+        partner.isPhoneNumberVerified = true;
+        await partner.save();
+      }
+
+      return res.status(200).json({
+        message: "OTP verified successfully",
+        status: verification.status,
+      });
+    } else {
+      return res.status(400).json({
+        message: "Invalid OTP",
+        status: verification.status,
+      });
+    }
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Unable to verify OTP",
+    });
+  }
+}
 module.exports = {
   registerUser,
   logoutUser,
   registerPartener,
   logoutPartener,
   getMe,
-  login
+  login,
+  sendOtp,
+  verifyOtp,
 };

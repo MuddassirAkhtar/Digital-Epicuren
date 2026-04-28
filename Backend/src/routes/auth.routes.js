@@ -25,4 +25,13 @@ router.get('/foodpartener/logout', auth,  authController.logoutPartener)
 
 router.get('/me', auth, authController.getMe)
 
+
+// otp sending and verification 
+
+router.post("/send-otp" ,authController.sendOtp)
+
+router.post("/resend-otp" ,authController.sendOtp)
+
+router.post("/verify-otp" ,authController.verifyOtp)
+
 module.exports = router

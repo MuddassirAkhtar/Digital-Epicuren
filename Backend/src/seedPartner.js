@@ -428,14 +428,7 @@ const finalMenuItems = [
 
 ];
 
-const imageMap = {
-  Pizza: "https://images.unsplash.com/photo-1601924582975-7e79f4b9b2b4",
-  Burger: "https://images.unsplash.com/photo-1550547660-d9450f859349",
-  Biryani: "https://images.unsplash.com/photo-1604908177522-040fbb2c4a7c",
-  Shawarma: "https://images.unsplash.com/photo-1617196038435-2c9f3c8f2d2d",
-  Healthy: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-  Seafood: "https://images.unsplash.com/photo-1504674900247-0877df9cc836"
-};
+
 
 
 async function seedMenuItems() {
@@ -443,11 +436,7 @@ async function seedMenuItems() {
     await mongoose.connect(MONGO_URI);
     console.log("DB Connected for Menu Seeding");
 
-    // attach images based on cuisine
-    const menuWithImages = finalMenuItems.map(item => ({
-      ...item,
-      image: imageMap[item.cuisine] || ""
-    }));
+    
 
     // insert into DB
     await menueModel.insertMany(menuWithImages);

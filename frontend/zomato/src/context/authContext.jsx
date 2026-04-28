@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const res = await axios.get(
-          "https://digital-epicuren.onrender.com/api/user/me",
+          `${import.meta.env.VITE_API_URL}/api/user/me`,
           { withCredentials: true }
         );
 

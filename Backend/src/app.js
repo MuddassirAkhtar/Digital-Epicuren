@@ -6,7 +6,10 @@ const app = express();
 
 
 app.use(cors({
-  origin: "https://digital-epicuren-1.onrender.com",
+   origin: [
+      "http://localhost:5173", // Local frontend
+      "https://your-frontend-render-url.onrender.com" // Deployed frontend
+    ],
   credentials: true,
 }));
 // 🔥 REQUIRED middlewares

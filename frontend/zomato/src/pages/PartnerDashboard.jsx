@@ -78,7 +78,7 @@ const handleFormSubmit = async (e) => {
     data.append("quantityUnit", formData.quantityUnit);
     data.append("image", formData.image);
 
-    const response = await fetch(`https://digital-epicuren.onrender.com/api/food/addmenueitem/${partnerId}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/food/addmenueitem/${partnerId}`, {
       method: "POST",
       body: data,
         credentials: "include", // 🔥 IMPORTANT
@@ -107,7 +107,7 @@ const handleStatusChange = async (e, itemId) => {
 
   try {
     await axios.patch(
-      `https://digital-epicuren.onrender.com/api/food/menueitem/${partnerId}/status/${itemId}`,
+      `${import.meta.env.VITE_API_URL}/api/food/menueitem/${partnerId}/status/${itemId}`,
       { status: newStatus },
       { withCredentials: true }
     )

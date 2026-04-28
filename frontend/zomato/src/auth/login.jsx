@@ -19,7 +19,7 @@ const Login = () => {
     setError('');
 
     const response = await axios.post(
-      'https://digital-epicuren.onrender.com/api/user/login',
+      `${import.meta.env.VITE_API_URL}/api/user/login`,
       { email, password },
       { withCredentials: true }
     );
@@ -28,7 +28,11 @@ const Login = () => {
 
     console.log('Login successful:', userData);
 
-    navigate('/');
+    // Store email temporarily for OTP verification
+    localStorage.setItem('pendingEmail', email);
+
+    // Redirect to OTP verification page
+    navigate('/verify-otp', { state: { email } });
 
   } catch (err) {
     console.error(err);

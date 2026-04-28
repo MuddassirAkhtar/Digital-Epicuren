@@ -56,7 +56,7 @@ const Reels = () => {
 
     async function fetchReels() {
       try {
-        const response = await axios.get("https://digital-epicuren.onrender.com/api/food/reels");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/food/reels`);
         setReels(response.data.data);
       } catch (err) {
         console.log(err);

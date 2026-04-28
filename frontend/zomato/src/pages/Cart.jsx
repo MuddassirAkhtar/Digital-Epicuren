@@ -13,7 +13,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get("https://digital-epicuren.onrender.com/api/cart/", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart/`, {
           withCredentials: true,
         });
         setCart(response.data.items);
@@ -29,7 +29,7 @@ const Cart = () => {
   const handleRemoveFromCart = async (foodItemId) => {
     try {
       await axios.post(
-        "https://digital-epicuren.onrender.com/api/cart/remove",
+        `${import.meta.env.VITE_API_URL}/api/cart/remove`,
         {
           foodItemId,
         },
@@ -48,7 +48,7 @@ const Cart = () => {
   const handleClearCart = async () => {
     try {
       await axios.post(
-        "https://digital-epicuren.onrender.com/api/cart/clear",
+        `${import.meta.env.VITE_API_URL}/api/cart/clear`,
         {},
         {
           withCredentials: true,
@@ -63,7 +63,7 @@ const Cart = () => {
   const handleIncreaseQuantity = async (foodItemId, currentQuantity) => {
     try {
       await axios.post(
-        "https://digital-epicuren.onrender.com/api/cart/add",
+        `${import.meta.env.VITE_API_URL}/api/cart/add`,
         {
           foodItemId,
           quantity: 1,
@@ -93,7 +93,7 @@ const Cart = () => {
     }
     try {
       await axios.post(
-        "https://digital-epicuren.onrender.com/api/cart/decrease",
+        `${import.meta.env.VITE_API_URL}/api/cart/decrease`,
         {
           foodItemId,
         },
@@ -122,7 +122,7 @@ const Cart = () => {
 
     // ✅ Step 1: Call backend (create order + razorpay order)
     const { data } = await axios.post(
-      "https://digital-epicuren.onrender.com/api/payment/checkout",
+      `${import.meta.env.VITE_API_URL}/api/payment/checkout`,
       {
         orderedItems: cart.map((item) => ({
           menuId: item.foodItemId._id,
@@ -144,7 +144,7 @@ const Cart = () => {
       handler: async function (response) {
         try {
           await axios.post(
-            "https://digital-epicuren.onrender.com/api/payment/verify",
+            `${import.meta.env.VITE_API_URL}/api/payment/verify`,
             {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,

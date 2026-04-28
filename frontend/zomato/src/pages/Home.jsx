@@ -14,7 +14,7 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("https://digital-epicuren.onrender.com/api/user/logout", {
+      await axios.get(`${import.meta.env.VITE_API_URL}/api/user/logout`, {
         withCredentials: true,
       });
       setUser(null); // Clear user from context
@@ -64,7 +64,7 @@ const Home = () => {
     async function getPartners() {
       try {
         const response = await axios.get(
-          "https://digital-epicuren.onrender.com/api/food/partners",
+          `${import.meta.env.VITE_API_URL}/api/food/partners`,  
         );
         setPartners(response.data.data);
         // console.log(partners);

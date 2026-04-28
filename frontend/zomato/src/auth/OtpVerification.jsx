@@ -24,22 +24,41 @@ const OtpVerification = () => {
 
   // Send OTP when component mounts and email is available
   useEffect(() => {
-    if (email) {
-      const sendOtp = async () => {
-        try {
-          await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/user/send-otp`,
-            { email },
-            { withCredentials: true }
-          )
-          console.log('OTP sent successfully')
-        } catch (err) {
-          console.error('Failed to send OTP:', err)
+  if (!email) return;
+
+  const handleOtpFlow = async () => {
+    try {
+      // STEP 1: Check user verification status
+      const statusResponse = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/user/check-verification-status`,
+        {
+          params: { email },
+          withCredentials: true,
         }
+      );
+
+      // STEP 2: If already verified → Redirect
+      if (statusResponse.data.isPhoneNumberVerified) {
+        navigate("/dashboard");
+        return;
       }
-      sendOtp()
+
+      // STEP 3: If not verified → Send OTP
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/send-otp`,
+        { email },
+        { withCredentials: true }
+      );
+
+      console.log("OTP sent successfully");
+
+    } catch (err) {
+      console.error("OTP flow failed:", err);
     }
-  }, [email])
+  };
+
+  handleOtpFlow();
+}, [email, navigate]);
 
   // Resend timer logic
   useEffect(() => {
@@ -88,7 +107,7 @@ const OtpVerification = () => {
         { email, otp: otpCode },
         { withCredentials: true }
       )
-
+ 
       setSuccess('OTP verified successfully!')
       
       // Clear the pending email from localStorage

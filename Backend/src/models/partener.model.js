@@ -37,6 +37,13 @@ const partenerSchema = new mongoose.Schema({
             type:Boolean,
             default:false,
           },
+           resetToken:{
+            type:String,
+          },
+          expire:{
+            type:Date,
+
+          },
           userType:{
             type:String,
             default:'partner',

@@ -4,6 +4,7 @@ import Home from '../pages/Home'
 import Login from '../auth/login'
 import Register from '../auth/register'
 import OtpVerification from '../auth/OtpVerification'
+import ResetPassword from '../auth/ResetPassword'
 import Profile from '../pages/Profile'
 import Partners from '../pages/Partners'
 import PartnerDetail from '../pages/PartnerDetail'
@@ -18,7 +19,7 @@ import { AuthContext } from '../context/authContext'
 
 const AppRoutes = () => {
   const location = useLocation()
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/verify-otp'
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/verify-otp' || location.pathname.startsWith('/reset-password')
   const isReelsPage = location.pathname.startsWith('/reel')
  const user = React.useContext(AuthContext).user
   return (
@@ -29,6 +30,7 @@ const AppRoutes = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/verify-otp' element={<OtpVerification />} />
+          <Route path='/reset-password/:token' element={<ResetPassword />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/partners' element={<Partners />} />
           <Route path='/partners/:partnerId' element={<PartnerDetail />} />

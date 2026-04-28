@@ -1,15 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../context/authContext'
 
 const Login = () => {
   const navigate = useNavigate()
+  const { checkAuth } = useContext(AuthContext)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPopup, setShowPopup] = useState(false)
+  const [popupEmail, setPopupEmail] = useState('')
+  const [popupLoading, setPopupLoading] = useState(false)
+  const [popupError, setPopupError] = useState('')
+  const [popupSuccess, setPopupSuccess] = useState('')
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -26,11 +33,12 @@ const Login = () => {
 
     const userData = response.data;
 
-    console.log('Login successful:', userData);
+    // console.log('Login successful:', userData);
 
     // Store email temporarily for OTP verification
     localStorage.setItem('pendingEmail', email);
-
+    // Update auth context immediately
+    await checkAuth();
     // Redirect to OTP verification page
     navigate('/verify-otp', { state: { email } });
 
@@ -57,6 +65,43 @@ const Login = () => {
 
   const handleFacebookLogin = () => {
     console.log('Facebook login')
+  }
+
+  const handleForgotPassword = async () => {
+    if (!popupEmail) {
+      setPopupError('Please enter your email')
+      return
+    }
+
+    try {
+      setPopupLoading(true)
+      setPopupError('')
+      setPopupSuccess('')
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/forgot-password`,
+        { email: popupEmail },
+        { withCredentials: true }
+      )
+
+      setPopupSuccess('Password reset link sent to your email!')
+      setTimeout(() => {
+        setShowPopup(false)
+        setPopupEmail('')
+        setPopupSuccess('')
+      }, 2000)
+    } catch (err) {
+      console.error(err)
+      if (err.response) {
+        setPopupError(err.response.data?.message || 'Failed to send reset link')
+      } else if (err.request) {
+        setPopupError('Server not responding')
+      } else {
+        setPopupError('Something went wrong')
+      }
+    } finally {
+      setPopupLoading(false)
+    }
   }
 
   return (
@@ -116,12 +161,13 @@ const Login = () => {
                   <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">
                     Password
                   </label>
-                  <Link
-                    to="/forgot-password"
+                  <button
+                    type="button"
+                    onClick={() => setShowPopup(true)}
                     className="text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors"
                   >
                     Forgot?
-                  </Link>
+                  </button>
                 </div>
                 <div className="relative">
                   <input
@@ -213,6 +259,64 @@ const Login = () => {
           <p className="text-xs text-gray-400">© 2024 Digital Epicurean Portfolio</p>
         </div>
       </div>
+
+      {/* Email Popup Modal */}
+      {showPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Verify Email</h3>
+            
+            {popupError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                {popupError}
+              </div>
+            )}
+
+            {popupSuccess && (
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">
+                {popupSuccess}
+              </div>
+            )}
+            
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={popupEmail}
+                onChange={(e) => setPopupEmail(e.target.value)}
+                disabled={popupLoading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all duration-200 text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-100"
+                required
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  setShowPopup(false)
+                  setPopupEmail('')
+                  setPopupError('')
+                  setPopupSuccess('')
+                }}
+                disabled={popupLoading}
+                className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForgotPassword}
+                disabled={popupLoading}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold rounded-lg transition-all disabled:opacity-75 disabled:cursor-not-allowed"
+              >
+                {popupLoading ? 'Sending...' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 

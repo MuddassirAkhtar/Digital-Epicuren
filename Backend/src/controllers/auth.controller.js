@@ -1,8 +1,10 @@
 const userModel = require("../models/user.model");
-const  partenerModel = require("../models/partener.model")
+const partenerModel = require("../models/partener.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const otpService = require("../services/otp.service")
+const otpService = require("../services/otp.service");
+const crypto = require("crypto");
+const sendResetEmail = require("../services/email.service");
 
 async function registerUser(req, res) {
   const { fullName, email, password, phoneNumber } = req.body;
@@ -84,12 +86,11 @@ async function logoutUser(req, res) {
   });
 }
 
-
-
 async function registerPartener(req, res) {
-  const { ownerName, restaurantName, location , email, password , phoneNumber} = req.body;
+  const { ownerName, restaurantName, location, email, password, phoneNumber } =
+    req.body;
 
-  const isPartenerAlreadyExist = await  partenerModel.findOne({
+  const isPartenerAlreadyExist = await partenerModel.findOne({
     email,
   });
 
@@ -101,7 +102,7 @@ async function registerPartener(req, res) {
 
   const hashpassword = await bcrypt.hash(password, 10);
 
-  const partener = await  partenerModel.create({
+  const partener = await partenerModel.create({
     ownerName,
     restaurantName,
     location,
@@ -130,8 +131,7 @@ async function registerPartener(req, res) {
       ownerName: partener.ownerName,
       restaurantName: partener.restaurantName,
       location: partener.location,
-      phonNumber: partner.phoneNumber
-      
+      phonNumber: partner.phoneNumber,
     },
   });
 }
@@ -198,10 +198,7 @@ async function login(req, res) {
     let isPasswordValid = false;
 
     // 🔍 Check password type
-    if (
-      user.password.startsWith("$2a$") ||
-      user.password.startsWith("$2b$")
-    ) {
+    if (user.password.startsWith("$2a$") || user.password.startsWith("$2b$")) {
       // hashed password
       isPasswordValid = await bcrypt.compare(password, user.password);
     } else {
@@ -234,10 +231,7 @@ async function login(req, res) {
     }
 
     // create token with role
-    const token = jwt.sign(
-      { id: user._id, role },
-      process.env.SECRET_KEY
-    );
+    const token = jwt.sign({ id: user._id, role }, process.env.SECRET_KEY);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -253,7 +247,6 @@ async function login(req, res) {
         role,
       },
     });
-
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });
@@ -284,12 +277,12 @@ async function getMe(req, res) {
       if (user) {
         return res.status(200).json({
           authenticated: true,
-         
+
           user: {
             id: user._id,
-            fullName: user.fullName ,
+            fullName: user.fullName,
             email: user.email,
-             role: "user",
+            role: "user",
           },
         });
       }
@@ -299,12 +292,12 @@ async function getMe(req, res) {
       if (partner) {
         return res.status(200).json({
           authenticated: true,
-         
+
           user: {
             id: partner._id,
-            fullName: partner.ownerName ,
+            fullName: partner.ownerName,
             email: partner.email,
-             role: "partner",
+            role: "partner",
           },
         });
       }
@@ -312,7 +305,6 @@ async function getMe(req, res) {
       return res.status(404).json({
         message: "User not found",
       });
-
     } catch (err) {
       console.error(err);
       return res.status(500).json({
@@ -322,38 +314,32 @@ async function getMe(req, res) {
   });
 }
 
-async function sendOtp(req,res){
+async function sendOtp(req, res) {
+  const { email } = req.body;
 
-  const {email} = req.body;
+  let role = null;
+  let partener = null;
 
-let role = null;
-let partener = null
+  const user = await userModel.findOne({ email });
+  role = "user";
 
-const user = await userModel.findOne({email});
-role = "user"
+  if (!user) {
+    partener = await partenerModel.findOne({ email });
+    role = "partner";
+  }
 
-if(!user){
-  partener = await partenerModel.findOne({email})
-  role= "partner"
-}
+  console.log(user.phoneNumber);
 
-console.log(user.phoneNumber)
+  try {
+    role == "user"
+      ? otpService.createVerification(user.phoneNumber)
+      : otpService.createVerification(partener.phoneNumber);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "failed to send otp " });
+  }
 
-    
-try{
-
-  role == "user" ? otpService.createVerification(user.phoneNumber)
-                  :otpService.createVerification(partener.phoneNumber)
-  
-
-
-}catch(err){
-  console.log(err)
-  return res.status(500).json({"message": "failed to send otp "})
-}
-
-res.status(200).json({"mesage": "otp sent Sucessfully"})
-
+  res.status(200).json({ mesage: "otp sent Sucessfully" });
 }
 
 async function verifyOtp(req, res) {
@@ -405,11 +391,173 @@ async function verifyOtp(req, res) {
         status: verification.status,
       });
     }
-
   } catch (err) {
     console.log(err);
     return res.status(500).json({
       message: "Unable to verify OTP",
+    });
+  }
+}
+
+async function checkVerificationStatus(req, res) {
+  const { email } = req.query;
+
+  if (!email) {
+    return res.status(400).json({
+      message: "Email is required",
+    });
+  }
+
+  try {
+    let user = await userModel.findOne({ email });
+
+    if (user) {
+      return res.status(200).json({
+        role: "user",
+        isPhoneNumberVerified: user.isPhoneNumberVerified,
+      });
+    }
+
+    let partner = await partenerModel.findOne({ email });
+
+    if (partner) {
+      return res.status(200).json({
+        role: "partner",
+        isPhoneNumberVerified: partner.isPhoneNumberVerified,
+      });
+    }
+
+    return res.status(404).json({
+      message: "User not found",
+    });
+  } catch (err) {
+    console.error("Verification status check failed:", err);
+
+    return res.status(500).json({
+      message: "Server error while checking verification status",
+    });
+  }
+}
+
+async function forgetPassword(req, res) {
+  const { email } = req.body;
+
+  let partener = null;
+  let role = null;
+
+  const user = await userModel.findOne({ email });
+
+  if (user) {
+    role = "user";
+  } else {
+    partener = await partenerModel.findOne({ email });
+
+    if (partener) {
+      role = "partener";
+    } else {
+      return res.status(400).json({ message: "User not found" });
+    }
+  }
+
+  try {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    if (role === "user") {
+      user.resetToken = hashedToken;
+      user.expire = Date.now() + 15 * 60 * 1000;
+      await user.save();
+
+      const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+      await sendResetEmail(user.email, resetLink);
+    }
+
+    if (role === "partener") {
+      partener.resetToken = hashedToken;
+      partener.expire = Date.now() + 15 * 60 * 1000;
+      await partener.save();
+
+      const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+      await sendResetEmail(partener.email, resetLink);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset email sent",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+async function resetPassword(req, res) {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  let partener = null;
+  let role = null;
+
+  const user = await userModel.findOne({
+    resetToken: hashedToken,
+    expire: { $gt: Date.now() },
+  });
+
+  if (user) {
+    role = "user";
+  } else {
+    partener = await partenerModel.findOne({
+      resetToken: hashedToken,
+      expire: { $gt: Date.now() },
+    });
+
+    if (partener) {
+      role = "partener";
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired token",
+      });
+    }
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    if (role === "user") {
+      user.password = hashedPassword;
+      user.resetToken = undefined;
+      user.expire = undefined;
+      await user.save();
+    }
+
+    if (role === "partener") {
+      partener.password = hashedPassword;
+      partener.resetToken = undefined;
+      partener.expire = undefined;
+      await partener.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successful",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 }
@@ -422,4 +570,7 @@ module.exports = {
   login,
   sendOtp,
   verifyOtp,
+  checkVerificationStatus,
+  forgetPassword,
+  resetPassword,
 };

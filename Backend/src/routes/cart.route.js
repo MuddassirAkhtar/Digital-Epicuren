@@ -20,4 +20,5 @@ router.post("/decrease", auth, cartController.decreaseQuantity);
 // clear cart
 router.post("/clear", auth, cartController.clearCart);
 
+
 module.exports = router;

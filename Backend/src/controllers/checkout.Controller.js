@@ -18,21 +18,18 @@ async function checkOut(req, res) {
       return res.status(400).json({ message: "No items provided" });
     }
 
-    // ✅ Step 1: Extract IDs
     const ids = orderedItems.map(item => item.menuId);
 
     const menuItems = await menueModel.find({
       _id: { $in: ids },
     });
 
-    // ✅ Step 2: Validate
     if (menuItems.length !== ids.length) {
       return res.status(404).json({
         message: "Some items not found",
       });
     }
 
-    // ✅ Step 3: Calculate total
     let totalAmount = 0;
 
     orderedItems.forEach(orderItem => {
@@ -43,7 +40,6 @@ async function checkOut(req, res) {
       totalAmount += menu.price * orderItem.quantity;
     });
 
-    // ✅ Step 4: Save order in DB
     const newOrder = await orderModel.create({
       orderedItems,
       amount: {
@@ -52,13 +48,11 @@ async function checkOut(req, res) {
       },
     });
 
-    // ✅ Step 5: Create Razorpay order
     const razorpayOrder = await razorpay.orders.create({
-      amount: totalAmount * 100, // ⚠️ convert to paise
+      amount: totalAmount * 100, 
       currency: "INR",
     });
 
-    // ✅ Step 6: Save payment entry
     await PaymentModel.create({
       orderId: razorpayOrder.id,
       price: {
@@ -68,7 +62,6 @@ async function checkOut(req, res) {
       status: "pending",
     });
 
-    // ✅ Step 7: Send response to frontend
     res.status(201).json({
       message: "Order created successfully",
       orderId: newOrder._id,
@@ -90,7 +83,6 @@ async function verify(req, res) {
   const secret = process.env.RAZORPAY_KEY_SECRET;
 
   try {
-    // ✅ Step 1: Verify signature
     const isValid = validatePaymentVerification(
       {
         order_id: razorpayOrderId,
@@ -104,7 +96,6 @@ async function verify(req, res) {
       return res.status(400).json({ message: "Invalid signature" });
     }
 
-    // ✅ Step 2: Find payment in DB
     const payment = await PaymentModel.findOne({
       orderId: razorpayOrderId,
     });
@@ -113,14 +104,12 @@ async function verify(req, res) {
       return res.status(404).json({ message: "Payment not found" });
     }
 
-    // ✅ Step 3: Update payment
     payment.paymentId = razorpayPaymentId;
     payment.signature = signature;
     payment.status = "completed";
 
     await payment.save();
 
-    // ✅ Step 4: Success response
     res.json({ status: "success" });
 
   } catch (error) {

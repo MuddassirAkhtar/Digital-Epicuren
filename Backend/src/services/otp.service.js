@@ -28,7 +28,7 @@ async function createVerificationCheck(otp, phoneNumber) {
       to: phoneNumber,
     });
 
-  return verificationCheck.status;
+  return verificationCheck;
 }
 
 

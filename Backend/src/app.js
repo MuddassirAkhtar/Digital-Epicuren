@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const authroute = require('./routes/auth.routes')
-app.use('/api/user', authroute)
+app.use('/api/auth', authroute)
 
 
 const foodroute = require('./routes/food-partener.routes')

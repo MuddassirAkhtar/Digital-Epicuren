@@ -14,7 +14,7 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get(`${import.meta.env.VITE_API_URL}/api/user/logout`, {
+      await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
         withCredentials: true,
       });
       setUser(null); // Clear user from context

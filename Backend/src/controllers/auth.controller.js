@@ -85,7 +85,7 @@ async function registerUser(req, res) {
 // }
 
 async function logoutUser(req, res) {
-  res.clearCookie("token", {
+  res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -182,7 +182,7 @@ async function registerPartener(req, res) {
 // }
 
 async function logoutPartener(req, res) {
-  res.clearCookie("token", {
+  res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -200,7 +200,6 @@ async function login(req, res) {
   }
 
   try {
-    // check in both collections
     let user = await userModel.findOne({ email });
     let role = "user";
 
@@ -215,12 +214,9 @@ async function login(req, res) {
 
     let isPasswordValid = false;
 
-    // 🔍 Check password type
     if (user.password.startsWith("$2a$") || user.password.startsWith("$2b$")) {
-      // hashed password
       isPasswordValid = await bcrypt.compare(password, user.password);
     } else {
-      // plain password (dev case)
       isPasswordValid = password === user.password;
     }
 
@@ -228,7 +224,6 @@ async function login(req, res) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // 🔄 Upgrade plain → hashed AFTER successful login
     if (
       !user.password.startsWith("$2a$") &&
       !user.password.startsWith("$2b$")
@@ -238,28 +233,40 @@ async function login(req, res) {
       await user.save();
     }
 
-    // 📱 Send OTP to user's mobile number
     try {
       if (user.phoneNumber) {
         await otpService.createVerification(user.phoneNumber);
       }
     } catch (otpErr) {
       console.log("OTP sending failed:", otpErr);
-      // Continue with login even if OTP sending fails
     }
 
-    // create token with role
-    const token = jwt.sign({ id: user._id, role }, process.env.SECRET_KEY);
+    // ✅ ACCESS TOKEN — short lived, goes in response body
+    const accessToken = jwt.sign(
+      { id: user._id, role },
+      process.env.SECRET_KEY,
+      { expiresIn: "15m" }  // expires in 15 minutes
+    );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+    // ✅ REFRESH TOKEN — long lived, goes in httpOnly cookie
+    const refreshToken = jwt.sign(
+      { id: user._id, role },
+      process.env.REFRESH_SECRET_KEY,  // different secret than access token
+      { expiresIn: "7d" }  // expires in 7 days
+    );
+
+    // ✅ Refresh token in cookie — only used for /api/auth/refresh endpoint
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,                                               // JS cannot read this
+      secure: process.env.NODE_ENV === "production",               // HTTPS only in prod
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,                           // 7 days in milliseconds
     });
 
+    // ✅ Access token sent in response body — frontend stores in memory
     res.status(200).json({
       message: "Login Successful. OTP sent to registered mobile number.",
+      accessToken,  // frontend will store this in React context
       user: {
         id: user._id,
         fullName: user.fullName || user.ownerName,
@@ -267,9 +274,45 @@ async function login(req, res) {
         role,
       },
     });
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });
+  }
+}
+async function refresh(req, res) {
+  // Step 1: Read the refresh token from cookie
+  const refreshToken = req.cookies.refreshToken;
+
+  // Step 2: If no cookie exists, user is not logged in
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token found" });
+  }
+
+  // Step 3: Verify the refresh token
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
+    // decoded will be { id: user._id, role, iat, exp }
+
+    // Step 4: Issue a brand new access token
+    const newAccessToken = jwt.sign(
+      { id: decoded.id, role: decoded.role },
+      process.env.SECRET_KEY,
+      { expiresIn: "15m" }
+    );
+
+    // Step 5: Send new access token in response body
+    res.status(200).json({ accessToken: newAccessToken });
+
+  } catch (err) {
+    // This runs if refresh token is expired or tampered with
+    // Clear the bad cookie and force user to login again
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+    return res.status(403).json({ message: "Refresh token expired. Please login again." });
   }
 }
 
@@ -593,4 +636,5 @@ module.exports = {
   checkVerificationStatus,
   forgetPassword,
   resetPassword,
+  refresh,
 };

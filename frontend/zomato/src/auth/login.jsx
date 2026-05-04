@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { AuthContext } from '../context/authContext'
+import { useAuth } from '../context/authContext'
 
 const Login = () => {
   const navigate = useNavigate()
-  const { checkAuth } = useContext(AuthContext)
+  const { checkAuth } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -18,7 +18,7 @@ const Login = () => {
   const [popupError, setPopupError] = useState('')
   const [popupSuccess, setPopupSuccess] = useState('')
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
@@ -26,25 +26,25 @@ const Login = () => {
     setError('');
 
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/user/login`,
+      `${import.meta.env.VITE_API_URL}/api/auth/login`,
       { email, password },
-      { withCredentials: true }
+      { withCredentials: true } // still needed — sets the refreshToken cookie
     );
 
-    const userData = response.data;
+    // ✅ Store accessToken temporarily in sessionStorage
+    // ONLY until OTP is verified — then we move it to memory
+    // sessionStorage is safer than localStorage — cleared when tab closes
+    sessionStorage.setItem('tempAccessToken', response.data.accessToken);
 
-    // console.log('Login successful:', userData);
-
-    // Store email temporarily for OTP verification
     localStorage.setItem('pendingEmail', email);
-    // Update auth context immediately
-    await checkAuth();
-    // Redirect to OTP verification page
+
+    // Don't call checkAuth() here anymore — user isn't fully authenticated yet
+    // OTP still needs to be verified
+
     navigate('/verify-otp', { state: { email } });
 
   } catch (err) {
     console.error(err);
-
     if (err.response) {
       setError(err.response.data?.message || 'Invalid credentials');
     } else if (err.request) {
@@ -52,7 +52,6 @@ const Login = () => {
     } else {
       setError('Something went wrong');
     }
-
   } finally {
     setLoading(false);
   }
@@ -79,7 +78,7 @@ const Login = () => {
       setPopupSuccess('')
 
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/user/forgot-password`,
+        `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
         { email: popupEmail },
         { withCredentials: true }
       )

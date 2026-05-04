@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useEffect } from "react";
-import axios from "axios";
+import api from "../utils/axiosInstance";
 import PaymentButton from "../components/PaymentButton";
 
 const Cart = () => {
@@ -13,9 +13,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart/`, {
-          withCredentials: true,
-        });
+        const response = await api.get(`/api/cart/`);
         setCart(response.data.items);
         // console.log("FULL RESPONSE:", response.data);
       } catch (err) {
@@ -28,15 +26,9 @@ const Cart = () => {
 
   const handleRemoveFromCart = async (foodItemId) => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cart/remove`,
-        {
-          foodItemId,
-        },
-        {
-          withCredentials: true,
-        },
-      );
+      await api.post(`/api/cart/remove`, {
+        foodItemId,
+      });
       setCart((prevCart) =>
         prevCart.filter((item) => item.foodItemId._id !== foodItemId),
       );
@@ -47,13 +39,7 @@ const Cart = () => {
 
   const handleClearCart = async () => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cart/clear`,
-        {},
-        {
-          withCredentials: true,
-        },
-      );
+      await api.post(`/api/cart/clear`, {});
       setCart([]);
     } catch (err) {
       console.error("Error clearing cart:", err);
@@ -62,18 +48,12 @@ const Cart = () => {
 
   const handleIncreaseQuantity = async (foodItemId, currentQuantity) => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cart/add`,
-        {
-          foodItemId,
-          quantity: 1,
-          partnerName: cart.find((item) => item.foodItemId._id === foodItemId)
-            ?.partnerName,
-        },
-        {
-          withCredentials: true,
-        },
-      );
+      await api.post(`/api/cart/add`, {
+        foodItemId,
+        quantity: 1,
+        partnerName: cart.find((item) => item.foodItemId._id === foodItemId)
+          ?.partnerName,
+      });
       setCart((prevCart) =>
         prevCart.map((item) =>
           item.foodItemId._id === foodItemId
@@ -92,15 +72,9 @@ const Cart = () => {
       return;
     }
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cart/decrease`,
-        {
-          foodItemId,
-        },
-        {
-          withCredentials: true,
-        },
-      );
+      await api.post(`/api/cart/decrease`, {
+        foodItemId,
+      });
       setCart((prevCart) =>
         prevCart.map((item) =>
           item.foodItemId._id === foodItemId
@@ -121,16 +95,12 @@ const Cart = () => {
     }
 
     // ✅ Step 1: Call backend (create order + razorpay order)
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/payment/checkout`,
-      {
-        orderedItems: cart.map((item) => ({
-          menuId: item.foodItemId._id,
-          quantity: item.quantity,
-        })),
-      },
-      { withCredentials: true }
-    );
+    const { data } = await api.post(`/api/payment/checkout`, {
+      orderedItems: cart.map((item) => ({
+        menuId: item.foodItemId._id,
+        quantity: item.quantity,
+      })),
+    });
 
     // ✅ Step 2: Open Razorpay
     const options = {
@@ -143,14 +113,11 @@ const Cart = () => {
 
       handler: async function (response) {
         try {
-          await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/payment/verify`,
-            {
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              signature: response.razorpay_signature,
-            }
-          );
+          await api.post(`/api/payment/verify`, {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            signature: response.razorpay_signature,
+          });
 
           alert("Payment Successful 🎉");
           handleClearCart();

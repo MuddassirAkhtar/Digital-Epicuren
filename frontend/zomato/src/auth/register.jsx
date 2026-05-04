@@ -68,8 +68,8 @@ const Register = () => {
 
       const url =
         dataToSend.userType === "customer"
-          ? `${import.meta.env.VITE_API_URL}/api/user/register`
-          : `${import.meta.env.VITE_API_URL}/api/user/foodpartener/register`;
+          ? `${import.meta.env.VITE_API_URL}/api/auth/register`
+          : `${import.meta.env.VITE_API_URL}/api/auth/foodpartener/register`;
 
       await axios.post(url, dataToSend);
 

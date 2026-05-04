@@ -11,6 +11,8 @@ router.post('/login', authController.login)
 
 router.get('/logout', auth , authController.logoutUser)
 
+router.get('/refresh', authController.refresh)
+
 
 // foodpartener  routes
 

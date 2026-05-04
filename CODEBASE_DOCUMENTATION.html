@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomato Food Delivery - Codebase Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            page-break-inside: avoid;
+        }
+        
+        .section h2 {
+            color: #FF6B35;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #FF6B35;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #F7931E;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .diagram-container {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: #FF6B35;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .model-box {
+            background: #f0f8ff;
+            border-left: 4px solid #FF6B35;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .model-box h4 {
+            color: #FF6B35;
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 4px;
+            display: block;
+            overflow-x: auto;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        .flow-description {
+            background: #e8f5e9;
+            padding: 15px;
+            border-left: 4px solid #4caf50;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .api-endpoint {
+            background: #fff3e0;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .api-endpoint strong {
+            color: #ff6f00;
+        }
+        
+        .file-reference {
+            color: #0066cc;
+            font-weight: 500;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .badge-get {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .badge-post {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .badge-patch {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .badge-delete {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .badge-auth {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .toc {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h3 {
+            margin-bottom: 15px;
+            color: #FF6B35;
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc li {
+            margin-bottom: 8px;
+        }
+        
+        .toc a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                max-width: 100%;
+                padding: 0;
+                box-shadow: none;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            header {
+                margin-bottom: 30px;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Zomato Food Delivery Platform</h1>
+            <p>Complete Codebase Architecture & Technical Documentation</p>
+        </header>
+        
+        <!-- TABLE OF CONTENTS -->
+        <div class="toc">
+            <h3>📑 Table of Contents</h3>
+            <ul>
+                <li><a href="#overview">System Overview & Architecture</a></li>
+                <li><a href="#auth-flow">Authentication System</a></li>
+                <li><a href="#database">Database Models & Relationships</a></li>
+                <li><a href="#backend">Backend API Structure</a></li>
+                <li><a href="#frontend">Frontend Application Structure</a></li>
+                <li><a href="#workflows">Core Business Workflows</a></li>
+                <li><a href="#tech-stack">Technology Stack</a></li>
+            </ul>
+        </div>
+        
+        <!-- SECTION 1: SYSTEM OVERVIEW -->
+        <div class="section" id="overview">
+            <h2>1. System Overview & Architecture</h2>
+            <p>The Zomato platform is a full-stack food delivery application with two main user types: Customers and Restaurant Partners. The system handles user authentication, food catalog management, cart operations, and payment processing.</p>
+            
+            <h3>System Architecture Diagram</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TB
+                    subgraph "Frontend (React + Vite)"
+                        A["🖥️ Web App<br/>React 18 + Vite"]
+                        B["📱 Mobile UI<br/>Tailwind CSS"]
+                        C["🔐 Auth Context<br/>JWT Handling"]
+                        D["🛒 Cart Context<br/>State Management"]
+                        A --> C
+                        A --> D
+                        B --> C
+                        B --> D
+                    end
+                    
+                    subgraph "Network Layer"
+                        E["🌐 Axios<br/>HTTP Client"]
+                        F["🍪 Cookies<br/>HttpOnly Secure"]
+                    end
+                    
+                    subgraph "Backend (Node.js + Express)"
+                        G["⚙️ Express Server<br/>API Routes"]
+                        H["🔒 Auth Middleware<br/>JWT + Cookies"]
+                        I["🎮 Controllers<br/>Business Logic"]
+                    end
+                    
+                    subgraph "Database Layer"
+                        J["🗄️ MongoDB<br/>Atlas Cluster"]
+                        K["👤 Users"]
+                        L["🏪 Partners"]
+                        M["🍜 Menu Items"]
+                        N["📹 Reels/Videos"]
+                        O["🛒 Carts"]
+                        P["📦 Orders"]
+                        Q["💳 Payments"]
+                    end
+                    
+                    subgraph "External Services"
+                        R["📞 Twilio<br/>OTP Service"]
+                        S["📧 Email Service<br/>Password Reset"]
+                        T["💰 Razorpay<br/>Payment Gateway"]
+                        U["☁️ Cloud Storage<br/>Images/Videos"]
+                    end
+                    
+                    A --> E
+                    B --> E
+                    E --> F
+                    F --> G
+                    G --> H
+                    H --> I
+                    I --> J
+                    J --> K
+                    J --> L
+                    J --> M
+                    J --> N
+                    J --> O
+                    J --> P
+                    J --> Q
+                    I --> R
+                    I --> S
+                    I --> T
+                    I --> U
+                </div>
+            </div>
+            
+            <h3>Technology Stack</h3>
+            <div class="grid-2">
+                <div class="model-box">
+                    <h4>Frontend</h4>
+                    <ul style="margin-left: 15px;">
+                        <li>React 18 + Vite</li>
+                        <li>Tailwind CSS (Responsive)</li>
+                        <li>Axios (HTTP requests)</li>
+                        <li>React Router (Navigation)</li>
+                        <li>Context API (State)</li>
+                    </ul>
+                </div>
+                <div class="model-box">
+                    <h4>Backend</h4>
+                    <ul style="margin-left: 15px;">
+                        <li>Node.js + Express</li>
+                        <li>MongoDB + Mongoose</li>
+                        <li>JWT (Authentication)</li>
+                        <li>Bcrypt (Password Hashing)</li>
+                        <li>Multer (File Uploads)</li>
+                    </ul>
+                </div>
+                <div class="model-box">
+                    <h4>External Services</h4>
+                    <ul style="margin-left: 15px;">
+                        <li>Twilio (SMS OTP)</li>
+                        <li>Nodemailer (Email)</li>
+                        <li>Razorpay (Payments)</li>
+                        <li>Google Cloud Storage</li>
+                    </ul>
+                </div>
+                <div class="model-box">
+                    <h4>Deployment</h4>
+                    <ul style="margin-left: 15px;">
+                        <li>Backend: Render.com</li>
+                        <li>Frontend: Vercel/Netlify</li>
+                        <li>Database: MongoDB Atlas</li>
+                        <li>CORS: localhost & Render</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION 2: AUTHENTICATION SYSTEM -->
+        <div class="section" id="auth-flow">
+            <h2>2. Authentication System</h2>
+            
+            <h3>Authentication Architecture</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph LR
+                    A["🔑 JWT Token<br/>httpOnly Cookie"] --> B["🔒 Middleware<br/>auth()"]
+                    B --> C{Token Valid?}
+                    C -->|Yes| D["✅ req.user = decoded"]
+                    C -->|No| E["❌ 401 Unauthorized"]
+                    D --> F["➡️ next()"]
+                    F --> G["Protected Route"]
+                    E --> H["Request Rejected"]
+                </div>
+            </div>
+            
+            <h3>User Registration Flow</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["👤 User Submits<br/>Registration Form"] --> B["Email validation"]
+                    B --> C{Email<br/>already exists?}
+                    C -->|Yes| D["❌ 409 Conflict<br/>User exists"]
+                    C -->|No| E["🔐 Hash Password<br/>bcrypt - 10 rounds"]
+                    E --> F["💾 Create User<br/>in Database"]
+                    F --> G["🔑 Generate JWT<br/>jwt.sign id, userType"]
+                    G --> H["🍪 Set HttpOnly Cookie<br/>httpOnly: true<br/>sameSite: lax<br/>secure: false dev"]
+                    H --> I["✅ Return User Data<br/>201 Created"]
+                </div>
+            </div>
+            
+            <h3>Login & OTP Verification Flow</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["📧 User enters Email"] --> B["🔍 Search User collection"]
+                    B --> C{Found?}
+                    C -->|No| D["🔍 Search Partner collection"]
+                    D --> E{Found?}
+                    E -->|No| F["❌ Invalid credentials"]
+                    E -->|Yes| G["role = partner"]
+                    C -->|Yes| H["role = user"]
+                    G --> I["🔐 Compare Password"]
+                    H --> I
+                    I --> J{Password<br/>Valid?}
+                    J -->|No| F
+                    J -->|Yes| K["📱 Send OTP via Twilio"]
+                    K --> L["🔑 Create JWT<br/>id + role"]
+                    L --> M["🍪 Set Secure Cookie"]
+                    M --> N["✅ Redirect to<br/>OTP Verification"]
+                </div>
+            </div>
+            
+            <h3>OTP Verification & Phone Verification</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["👤 User enters OTP"] --> B["📞 Twilio Verification<br/>Check OTP"]
+                    B --> C{OTP Valid?}
+                    C -->|No| D["❌ Invalid OTP"]
+                    C -->|Yes| E["✅ status = approved"]
+                    E --> F["☑️ Set isPhoneNumberVerified<br/>= true"]
+                    F --> G["💾 Save to Database"]
+                    G --> H["✅ Phone Verified"]
+                </div>
+            </div>
+            
+            <h3>Password Reset Flow</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["🔑 User Forgot Password"] --> B["Submit Email"]
+                    B --> C["🎲 Generate Reset Token<br/>crypto.randomBytes32"]
+                    C --> D["🔐 Hash Token<br/>SHA256"]
+                    D --> E["💾 Save Hashed Token<br/>+ 15min expiry"]
+                    E --> F["📧 Send Email<br/>Reset Link"]
+                    F --> G["User Clicks Link"]
+                    G --> H["Enter New Password"]
+                    H --> I["🔍 Verify Token<br/>Hash & Expiry"]
+                    I --> J{Token Valid?}
+                    J -->|No| K["❌ Token Expired"]
+                    J -->|Yes| L["🔐 Hash New Password"]
+                    L --> M["💾 Update Password<br/>Clear Token"]
+                    M --> N["✅ Password Reset"]
+                </div>
+            </div>
+            
+            <h3>Protected Route Middleware</h3>
+            <div class="flow-description">
+                <strong>auth() Middleware:</strong><br>
+                1. Extract token from req.cookies.token<br>
+                2. If no token → 401 "token missing"<br>
+                3. Verify JWT: jwt.verify(token, SECRET_KEY)<br>
+                4. If invalid → 500 "failed to authenticate"<br>
+                5. Attach decoded payload: req.user = {id, role}<br>
+                6. Call next() → route handler executed
+            </div>
+            
+            <div class="flow-description">
+                <strong>isPartner() Middleware:</strong><br>
+                1. Check req.user.role === "partner"<br>
+                2. If not partner → 403 "Access denied. Partners only."<br>
+                3. If partner → next()
+            </div>
+            
+            <div class="flow-description">
+                <strong>isOwner() Middleware:</strong><br>
+                1. Get partnerId from req.params<br>
+                2. Find partner in database<br>
+                3. Check partner._id === req.user.id<br>
+                4. If owner → next()<br>
+                5. If not → 403 "Not the owner"
+            </div>
+        </div>
+        
+        <!-- SECTION 3: DATABASE MODELS -->
+        <div class="section" id="database">
+            <h2>3. Database Models & Relationships</h2>
+            
+            <h3>Database Schema Relationships</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    erDiagram
+                    USER ||--o{ CART : has
+                    USER ||--o{ ORDER : places
+                    USER ||--o{ LIKE : gives
+                    PARTNER ||--o{ MENUE : offers
+                    PARTNER ||--o{ REEL : uploads
+                    MENUE ||--o{ REEL : "featured in"
+                    MENUE ||--o{ LIKE : receives
+                    MENUE ||--o{ ORDER_ITEM : "ordered in"
+                    ORDER ||--o{ ORDER_ITEM : contains
+                    ORDER ||--|| PAYMENT : linked_to
+                    CART ||--o{ CART_ITEM : contains
+                    CART_ITEM ||--|| MENUE : references
+                    REEL ||--o{ LIKE : "has many"
+                </div>
+            </div>
+            
+            <h3>User Model</h3>
+            <div class="model-box">
+                <h4>Collection: users</h4>
+                <code>
+{
+  _id: ObjectId,
+  fullName: String (required),
+  email: String (required, unique),
+  password: String (hashed),
+  phoneNumber: String,
+  isEmailVerified: Boolean (default: false),
+  isPhoneNumberVerified: Boolean (default: false),
+  resetToken: String,
+  expire: Date,
+  userType: String (default: "customer"),
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+                </code>
+            </div>
+            
+            <h3>Partner Model</h3>
+            <div class="model-box">
+                <h4>Collection: partners</h4>
+                <code>
+{
+  _id: ObjectId,
+  ownerName: String (required),
+  email: String (required, unique),
+  password: String (hashed),
+  restaurantName: String (required),
+  location: String (required),
+  phoneNumber: String,
+  isEmailVerified: Boolean (default: false),
+  isPhoneNumberVerified: Boolean (default: false),
+  resetToken: String,
+  expire: Date,
+  userType: String (default: "partner"),
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+                </code>
+            </div>
+            
+            <h3>Menu Item Model (Menue)</h3>
+            <div class="model-box">
+                <h4>Collection: menus</h4>
+                <code>
+{
+  _id: ObjectId,
+  name: String (required),
+  description: String,
+  price: Number (required),
+  foodPartener: ObjectId (ref: Partner, required),
+  quantity: Number,
+  cuisine: Enum ["Indian", "Chinese", "Italian", "Mexican", "Continental", "Other"],
+  image: String (image URL from storage),
+  quantityUnit: Enum ["pcs", "cup", "ml", "gram", "kg", "plate"],
+  currency: Enum ["INR", "USD", "EUR"] (default: "INR"),
+  status: Enum ["live", "low stock", "out of stock"] (default: "live"),
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+                </code>
+            </div>
+            
+            <h3>Food Reel Model</h3>
+            <div class="model-box">
+                <h4>Collection: reels</h4>
+                <code>
+{
+  _id: ObjectId,
+  reelName: String (required),
+  description: String,
+  video: String (video URL from storage, required),
+  likeCounts: Number (default: 0),
+  likes: [ObjectId] (ref: User, array of liking users),
+  foodPartener: ObjectId (ref: Partner, required),
+  foodItemId: ObjectId (ref: Menue, required),
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+                </code>
+            </div>
+            
+            <h3>Cart Model</h3>
+            <div class="model-box">
+                <h4>Collection: carts</h4>
+                <code>
+{
+  _id: ObjectId,
+  userId: ObjectId (ref: User, required),
+  items: [{
+    foodItemId: ObjectId (ref: Menue, required),
+    quantity: Number (default: 1),
+    partnerName: String (required)
+  }],
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+                </code>
+            </div>
+            
+            <h3>Order Model</h3>
+            <div class="model-box">
+                <h4>Collection: orders</h4>
+                <code>
+{
+  _id: ObjectId,
+  orderedItems: [{
+    menuId: ObjectId (ref: Menue, required),
+    quantity: Number (required)
+  }],
+  userId: ObjectId (ref: User),
+  amount: {
+    price: Number (required),
+    currency: String (default: "INR")
+  },
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+                </code>
+            </div>
+            
+            <h3>Payment Model</h3>
+            <div class="model-box">
+                <h4>Collection: payments</h4>
+                <code>
+{
+  _id: ObjectId,
+  orderId: String (Razorpay Order ID, required),
+  paymentId: String (Razorpay Payment ID),
+  signature: String (Razorpay Signature),
+  price: {
+    amount: Number (required),
+    currency: String (default: "INR")
+  },
+  status: Enum ["pending", "completed", "failed"] (default: "pending"),
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+                </code>
+            </div>
+        </div>
+        
+        <!-- SECTION 4: BACKEND API -->
+        <div class="section" id="backend">
+            <h2>4. Backend API Structure</h2>
+            
+            <h3>Authentication Routes (/api/user)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Controller Function</th>
+                            <th>Auth</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/register</td>
+                            <td>registerUser()</td>
+                            <td>❌</td>
+                            <td>Register new customer account</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/login</td>
+                            <td>login()</td>
+                            <td>❌</td>
+                            <td>Login user/partner, send OTP</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/logout</td>
+                            <td>logoutUser()</td>
+                            <td>✅</td>
+                            <td>Clear auth cookie, logout user</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/me</td>
+                            <td>getMe()</td>
+                            <td>✅</td>
+                            <td>Get current user/partner info</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/send-otp</td>
+                            <td>sendOtp()</td>
+                            <td>❌</td>
+                            <td>Send OTP to phone number</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/verify-otp</td>
+                            <td>verifyOtp()</td>
+                            <td>❌</td>
+                            <td>Verify OTP, set phone verified</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/forgot-password</td>
+                            <td>forgetPassword()</td>
+                            <td>❌</td>
+                            <td>Generate & email reset link</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/reset-password/:token</td>
+                            <td>resetPassword()</td>
+                            <td>❌</td>
+                            <td>Reset password with token</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/foodpartener/register</td>
+                            <td>registerPartener()</td>
+                            <td>❌</td>
+                            <td>Register restaurant partner</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/foodpartener/logout</td>
+                            <td>logoutPartener()</td>
+                            <td>✅</td>
+                            <td>Logout restaurant partner</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>Food & Menu Routes (/api/food)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Controller Function</th>
+                            <th>Auth</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/partners</td>
+                            <td>getPartners()</td>
+                            <td>❌</td>
+                            <td>Get all restaurant partners</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/partner/:partnerId</td>
+                            <td>getPartnerById()</td>
+                            <td>❌</td>
+                            <td>Get specific partner details</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/menue/:partnerId</td>
+                            <td>getMenueByPartnerId()</td>
+                            <td>❌</td>
+                            <td>Get menu items for partner</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/fooditem/:itemId</td>
+                            <td>getItembyId()</td>
+                            <td>❌</td>
+                            <td>Get single food item details</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/addmenueitem/:partnerId</td>
+                            <td>addMenuItems()</td>
+                            <td>✅</td>
+                            <td>Partner adds menu item</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-patch">PATCH</span></td>
+                            <td>/menueitem/:partnerId/status/:itemId</td>
+                            <td>updateMenuItemStatus()</td>
+                            <td>✅</td>
+                            <td>Update item status</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/reels</td>
+                            <td>getAllReels()</td>
+                            <td>❌</td>
+                            <td>Get all food reels</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/addfooditemreel/:partnerId</td>
+                            <td>addFooodItemsReel()</td>
+                            <td>✅</td>
+                            <td>Partner uploads food reel</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/reelcount/:partnerId</td>
+                            <td>getReelCount()</td>
+                            <td>❌</td>
+                            <td>Get reel count for partner</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/likes?foodId=X</td>
+                            <td>getLikeCount()</td>
+                            <td>❌</td>
+                            <td>Get like count for food item</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/likes</td>
+                            <td>likeCount()</td>
+                            <td>❌</td>
+                            <td>Toggle like on food item</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>Cart Routes (/api/cart)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Controller Function</th>
+                            <th>Auth</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/add</td>
+                            <td>addToCart()</td>
+                            <td>✅</td>
+                            <td>Add item to user's cart</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-get">GET</span></td>
+                            <td>/</td>
+                            <td>getCartItems()</td>
+                            <td>✅</td>
+                            <td>Fetch user's cart items</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/remove</td>
+                            <td>removeFromCart()</td>
+                            <td>✅</td>
+                            <td>Remove item from cart</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/decrease</td>
+                            <td>decreaseQuantity()</td>
+                            <td>✅</td>
+                            <td>Decrease item quantity</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/clear</td>
+                            <td>clearCart()</td>
+                            <td>✅</td>
+                            <td>Clear entire cart</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>Payment Routes (/api/payment)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Controller Function</th>
+                            <th>Auth</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/checkout</td>
+                            <td>checkOut()</td>
+                            <td>❌</td>
+                            <td>Create order, initiate Razorpay payment</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-post">POST</span></td>
+                            <td>/verify</td>
+                            <td>verify()</td>
+                            <td>❌</td>
+                            <td>Verify Razorpay signature, confirm payment</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- SECTION 5: FRONTEND -->
+        <div class="section" id="frontend">
+            <h2>5. Frontend Application Structure</h2>
+            
+            <h3>Frontend Architecture</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TB
+                    A["React App<br/>main.jsx"] --> B["App.jsx"]
+                    B --> C["Router Setup<br/>routes.jsx"]
+                    C --> D["Public Routes<br/>Login/Register"]
+                    C --> E["Protected Routes<br/>ProtectedRoute.jsx"]
+                    D --> D1["Login.jsx"]
+                    D --> D2["Register.jsx"]
+                    D --> D3["OtpVerification.jsx"]
+                    D --> D4["ResetPassword.jsx"]
+                    E --> E1["Home.jsx"]
+                    E --> E2["Partners.jsx"]
+                    E --> E3["PartnerDetail.jsx"]
+                    E --> E4["Reels.jsx"]
+                    E --> E5["Cart.jsx"]
+                    E --> E6["Profile.jsx"]
+                    B --> F["Context Providers<br/>AuthProvider, CartProvider"]
+                    F --> G["authContext.jsx<br/>User State + Token"]
+                    F --> H["CartContext.jsx<br/>Cart Items + UI"]
+                    I["Components<br/>Reusable UI"] --> I1["BottomNavigation.jsx"]
+                    I --> I2["PaymentButton.jsx"]
+                    I --> I3["ReelCard.jsx"]
+                    E --> I
+                </div>
+            </div>
+            
+            <h3>Page Flow Diagram</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["🏠 Landing Page"] -->|Not Logged In| B["🔐 Login/Register"]
+                    B -->|Login| C["📱 OTP Verification"]
+                    C -->|Verified| D["✅ Auth Context Updated"]
+                    B -->|Register| E["📋 Fill Details"]
+                    E -->|Submit| C
+                    A -->|Logged In| F["🏠 Home Page<br/>Hero + Partners"]
+                    F --> G{Browse?}
+                    G -->|View Restaurants| H["🏪 Partners Page<br/>Restaurant List"]
+                    G -->|View Reels| I["📹 Reels Page<br/>TikTok Style Videos"]
+                    H --> J["🍽️ Partner Detail<br/>Menu + Add to Cart"]
+                    I --> K{Like Food?}
+                    K -->|Yes| L["❤️ Toggle Like"]
+                    K -->|No| I
+                    J --> M{Add Cart?}
+                    M -->|Yes| N["🛒 Add to Cart<br/>CartContext Updated"]
+                    M -->|No| J
+                    N --> O["🛒 View Cart<br/>Cart Page"]
+                    O --> P{Checkout?}
+                    P -->|Yes| Q["💳 Razorpay Payment"]
+                    Q --> R["✅ Order Placed"]
+                    P -->|No| O
+                    F --> S["👤 Profile Page"]
+                </div>
+            </div>
+            
+            <h3>Frontend Pages Overview</h3>
+            
+            <h3>Authentication Pages</h3>
+            <div class="model-box">
+                <h4>Login.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>Email & password input fields</li>
+                    <li>Show/hide password toggle</li>
+                    <li>Forgot password popup modal</li>
+                    <li>POST /api/user/login with withCredentials: true</li>
+                    <li>Redirect to OTP verification on success</li>
+                    <li>Social login placeholders (Google, Facebook)</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>Register.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>Toggle: Customer vs Partner registration</li>
+                    <li>Customer: fullName, email, password, phone</li>
+                    <li>Partner: ownerName, restaurantName, location, email, password, phone</li>
+                    <li>Password confirmation validation</li>
+                    <li>Title case formatting for names</li>
+                    <li>POST to /api/user/register or /api/user/foodpartener/register</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>OtpVerification.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>6-digit OTP input</li>
+                    <li>Display user email</li>
+                    <li>Resend OTP option (time-limited)</li>
+                    <li>POST /api/user/verify-otp</li>
+                    <li>Redirect to home on success</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>ResetPassword.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>Form to set new password</li>
+                    <li>Password confirmation field</li>
+                    <li>Token passed via URL params</li>
+                    <li>POST /api/user/reset-password/:token</li>
+                    <li>Redirect to login on success</li>
+                </ul>
+            </div>
+            
+            <h3>Main Application Pages</h3>
+            <div class="model-box">
+                <h4>Home.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>Hero section with call-to-action</li>
+                    <li>Fetch partners from GET /api/food/partners</li>
+                    <li>Display restaurant grid</li>
+                    <li>Cuisine categories with counts</li>
+                    <li>Navigation header (login/logout)</li>
+                    <li>Responsive Tailwind CSS design</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>Partners.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>List all partners in grid layout</li>
+                    <li>Partner card: icon, name, location</li>
+                    <li>Click to navigate to partner details</li>
+                    <li>Back to home button</li>
+                    <li>Search/filter functionality</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>PartnerDetail.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>Partner info: name, location, reel count</li>
+                    <li>Fetch partner: GET /api/food/partner/:partnerId</li>
+                    <li>Fetch menu: GET /api/food/menue/:partnerId</li>
+                    <li>Display menu items with prices</li>
+                    <li>Add to cart button → POST /api/cart/add</li>
+                    <li>Update CartContext for UI state</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>Reels.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>TikTok-style vertical scrolling</li>
+                    <li>Fetch all reels: GET /api/food/reels</li>
+                    <li>Display video with name & description</li>
+                    <li>Like button (toggle like on food)</li>
+                    <li>Prev/next reel navigation</li>
+                    <li>Snap-scroll behavior</li>
+                    <li>URL-based navigation: /reel/:reelId</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>Cart.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>Display cart items from CartContext</li>
+                    <li>Quantity controls (+ / -)</li>
+                    <li>Remove item button</li>
+                    <li>Calculate total price</li>
+                    <li>Checkout button</li>
+                    <li>Empty cart message if no items</li>
+                </ul>
+            </div>
+            
+            <div class="model-box">
+                <h4>Profile.jsx</h4>
+                <ul style="margin-left: 15px;">
+                    <li>Display user info from AuthContext</li>
+                    <li>User avatar & name</li>
+                    <li>Email & phone number</li>
+                    <li>Edit profile button</li>
+                    <li>Logout button</li>
+                    <li>Order history (if implemented)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- SECTION 6: WORKFLOWS -->
+        <div class="section" id="workflows">
+            <h2>6. Core Business Workflows</h2>
+            
+            <h3>Food Ordering Workflow</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["👤 User browses partners<br/>GET /api/food/partners"] --> B["🏪 Select partner<br/>GET /api/food/partner/:id"]
+                    B --> C["📋 View menu items<br/>GET /api/food/menue/:id"]
+                    C --> D["🛒 Add items to cart<br/>POST /api/cart/add"]
+                    D --> E["🛒 View Cart<br/>GET /api/cart"]
+                    E --> F{Checkout?}
+                    F -->|Continue Shopping| C
+                    F -->|Proceed| G["💳 Initiate Payment<br/>POST /api/payment/checkout"]
+                    G --> H["🔐 Razorpay Order Created"]
+                    H --> I["💳 User Pays<br/>Razorpay UI"]
+                    I --> J["✅ Verify Payment<br/>POST /api/payment/verify"]
+                    J --> K{Signature Valid?}
+                    K -->|Yes| L["✅ Order Confirmed<br/>Payment Status: completed"]
+                    K -->|No| M["❌ Payment Failed"]
+                    L --> N["📦 Order Placed"]
+                </div>
+            </div>
+            
+            <h3>Cart Management Workflow</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["🛒 Empty Cart"] --> B["➕ Add Item<br/>POST /api/cart/add"]
+                    B --> C{Item exists?}
+                    C -->|No| D["Create new cart entry"]
+                    C -->|Yes| E["Increase quantity"]
+                    D --> F["🛒 Item in Cart"]
+                    E --> F
+                    F --> G{User Action?}
+                    G -->|View| H["GET /api/cart"]
+                    G -->|Add More| B
+                    G -->|Remove| I["POST /api/cart/remove"]
+                    G -->|Decrease Qty| J["POST /api/cart/decrease"]
+                    I --> K{Qty = 0?}
+                    K -->|Yes| L["Remove from cart"]
+                    K -->|No| M["Decrease quantity"]
+                    J --> M
+                    L --> N["Update Cart"]
+                    M --> N
+                    G -->|Clear| O["POST /api/cart/clear"]
+                    O --> P["🗑️ Empty Cart"]
+                </div>
+            </div>
+            
+            <h3>Video Reel & Like System</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["📹 Partner uploads reel<br/>POST /api/food/addfooditemreel/:id"] --> B["📤 Upload video to storage"]
+                    B --> C["💾 Save reel to database<br/>Reel model with foodItemId"]
+                    C --> D["✅ Reel Published"]
+                    E["👥 Users view reels<br/>GET /api/food/reels"] --> F["❤️ Like/Unlike reel<br/>POST /api/food/likes"]
+                    F --> G{First time liking?}
+                    G -->|Yes| H["Add userId to likes array<br/>likeCounts++"]
+                    G -->|No| I["Remove userId from likes array<br/>likeCounts--"]
+                    H --> J["💾 Save to database"]
+                    I --> J
+                    J --> K["❤️ Like count updated"]
+                    F --> L["Get like count<br/>GET /api/food/likes?foodId=X"]
+                </div>
+            </div>
+            
+            <h3>Partner Menu Management</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    flowchart TD
+                    A["👨‍🍳 Partner logged in<br/>POST /api/user/login"] --> B["🔑 JWT Token + OTP"]
+                    B --> C["Add menu item<br/>POST /api/food/addmenueitem/:id"]
+                    C --> D["🔍 Authenticate (middleware: auth)"]
+                    D --> E["👮 Authorize (middleware: isPartner, isOwner)"]
+                    E --> F["📤 Upload food image"]
+                    F --> G["💾 Save to Menue collection"]
+                    G --> H["✅ Item added"]
+                    H --> I["Update status<br/>PATCH /api/food/menueitem/:id/status/:itemId"]
+                    I --> J{New Status}
+                    J -->|live| K["Item available"]
+                    J -->|low stock| L["Item available<br/>Limited quantity"]
+                    J -->|out of stock| M["Item unavailable"]
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION 7: TECH STACK -->
+        <div class="section" id="tech-stack">
+            <h2>7. Technology Stack & Dependencies</h2>
+            
+            <h3>Backend Dependencies</h3>
+            <div class="model-box">
+                <h4>Core Framework</h4>
+                <code>
+express: 4.x - Web framework
+cors: 2.x - Cross-origin requests
+cookie-parser: 1.x - Cookie handling
+dotenv: ^16 - Environment variables
+                </code>
+            </div>
+            
+            <div class="model-box">
+                <h4>Database & Authentication</h4>
+                <code>
+mongoose: 7.x - MongoDB ODM
+jsonwebtoken: 9.x - JWT generation/verification
+bcrypt: 5.x - Password hashing
+crypto: Built-in - Token generation
+                </code>
+            </div>
+            
+            <div class="model-box">
+                <h4>File Uploads & Storage</h4>
+                <code>
+multer: 1.x - File upload middleware
+@google-cloud/storage: ^6.x - Cloud storage
+                </code>
+            </div>
+            
+            <div class="model-box">
+                <h4>External Services</h4>
+                <code>
+twilio: ^3.x - OTP via SMS
+nodemailer: ^6.x - Email service
+razorpay: ^2.x - Payment gateway
+                </code>
+            </div>
+            
+            <h3>Frontend Dependencies</h3>
+            <div class="model-box">
+                <h4>Framework & Build</h4>
+                <code>
+react: 18.x - UI library
+vite: 4.x - Build tool
+react-router-dom: 6.x - Routing
+react-dom: 18.x - React rendering
+                </code>
+            </div>
+            
+            <div class="model-box">
+                <h4>State Management & HTTP</h4>
+                <code>
+axios: 1.x - HTTP client
+Context API: Built-in - State management
+                </code>
+            </div>
+            
+            <div class="model-box">
+                <h4>Styling</h4>
+                <code>
+tailwindcss: 3.x - Utility CSS
+postcss: 8.x - CSS processing
+autoprefixer: 10.x - Vendor prefixes
+                </code>
+            </div>
+            
+            <div class="model-box">
+                <h4>Development Tools</h4>
+                <code>
+eslint: 8.x - Code linting
+@vitejs/plugin-react: Vite React plugin
+                </code>
+            </div>
+            
+            <h3>Deployment Configuration</h3>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TB
+                    A["Developer Machine"] -->|Push Code| B["GitHub Repository"]
+                    B -->|Deploy Backend| C["Render.com<br/>Node.js Server<br/>Environment: production"]
+                    B -->|Deploy Frontend| D["Vercel/Netlify<br/>React Static Build<br/>Vite Output"]
+                    C -->|Connect| E["MongoDB Atlas<br/>Cloud Database"]
+                    D -->|API Calls| C
+                    C -->|External APIs| F["Twilio - SMS OTP<br/>Nodemailer - Email<br/>Razorpay - Payments<br/>Google Cloud - Storage"]
+                </div>
+            </div>
+            
+            <h3>Environment Variables</h3>
+            
+            <h4>Backend .env</h4>
+            <code>
+NODE_ENV=production
+PORT=5000
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/zomato
+SECRET_KEY=your_jwt_secret_key
+
+# Twilio OTP Service
+TWILIO_ACCOUNT_SID=your_sid
+TWILIO_AUTH_TOKEN=your_token
+TWILIO_PHONE_NUMBER=+1234567890
+
+# Email Service
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+
+# Razorpay Payment
+RAZORPAY_KEY_ID=your_key_id
+RAZORPAY_KEY_SECRET=your_secret
+
+# Google Cloud Storage
+GOOGLE_PROJECT_ID=your_project_id
+GOOGLE_BUCKET_NAME=your_bucket
+
+FRONTEND_URL=https://your-frontend.com
+BACKEND_URL=https://your-backend.onrender.com
+            </code>
+            
+            <h4>Frontend .env</h4>
+            <code>
+VITE_API_URL=https://your-backend.onrender.com
+VITE_RAZORPAY_KEY=your_razorpay_key
+            </code>
+        </div>
+        
+        <!-- SECTION 8: KEY FEATURES & FLOW -->
+        <div class="section">
+            <h2>8. Key Features Summary</h2>
+            
+            <h3>User Management</h3>
+            <div class="flow-description">
+                ✅ <strong>Registration:</strong> Email verification, password hashing, phone number collection<br>
+                ✅ <strong>Login:</strong> Unified user/partner login, OTP verification via SMS<br>
+                ✅ <strong>Authentication:</strong> JWT tokens in httpOnly cookies, CORS-secure<br>
+                ✅ <strong>Password Reset:</strong> Email-based token with 15-minute expiry<br>
+                ✅ <strong>Profile:</strong> View user info, edit profile, order history
+            </div>
+            
+            <h3>Food Catalog</h3>
+            <div class="flow-description">
+                ✅ <strong>Partners:</strong> Restaurant listings with name, location, reel count<br>
+                ✅ <strong>Menu Items:</strong> Food items with price, cuisine, image, stock status<br>
+                ✅ <strong>Reels:</strong> TikTok-style vertical videos featuring food items<br>
+                ✅ <strong>Likes:</strong> Like/unlike system on food items with count tracking<br>
+                ✅ <strong>Stock Management:</strong> live / low stock / out of stock statuses
+            </div>
+            
+            <h3>Shopping Cart</h3>
+            <div class="flow-description">
+                ✅ <strong>Add to Cart:</strong> Add items with quantity tracking<br>
+                ✅ <strong>Quantity Management:</strong> Increase, decrease, or remove items<br>
+                ✅ <strong>Cart Persistence:</strong> Saved in database per user<br>
+                ✅ <strong>Clear Cart:</strong> Remove all items at once<br>
+                ✅ <strong>Multi-Partner:</strong> Single cart can have items from multiple partners
+            </div>
+            
+            <h3>Payments</h3>
+            <div class="flow-description">
+                ✅ <strong>Razorpay Integration:</strong> Secure payment gateway<br>
+                ✅ <strong>Order Creation:</strong> Create order with total amount<br>
+                ✅ <strong>Payment Verification:</strong> Validate Razorpay signature<br>
+                ✅ <strong>Payment Status:</strong> pending / completed / failed tracking<br>
+                ✅ <strong>Order History:</strong> Users can view past orders
+            </div>
+            
+            <h3>Partner Dashboard</h3>
+            <div class="flow-description">
+                ✅ <strong>Menu Management:</strong> Add, update, delete food items<br>
+                ✅ <strong>Stock Management:</strong> Update item availability status<br>
+                ✅ <strong>Video Reels:</strong> Upload promotional food videos<br>
+                ✅ <strong>Analytics:</strong> View reel count and engagement<br>
+                ✅ <strong>Order Management:</strong> View incoming orders (if implemented)
+            </div>
+        </div>
+        
+        <footer>
+            <p>🍽️ Zomato Food Delivery Platform - Complete Technical Documentation</p>
+            <p>Generated for Development Reference | April 2026</p>
+            <p>Backend: Node.js + Express + MongoDB | Frontend: React + Vite + Tailwind CSS</p>
+        </footer>
+    </div>
+    
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+        mermaid.contentLoaded();
+    </script>
+</body>
+</html>

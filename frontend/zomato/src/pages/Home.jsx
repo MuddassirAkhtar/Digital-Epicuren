@@ -76,6 +76,8 @@ const Home = () => {
     getPartners();
   }, []);
 
+  console.log(user)
+
   return (
     <div className="min-h-screen bg-white pb-24">
       {/* Navigation Header */}

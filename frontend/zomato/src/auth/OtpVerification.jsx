@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import axios from 'axios' // ✅ plain axios for auth calls
 import api from '../utils/axiosInstance'
-import { useAuth } from '../context/authContext' // ✅ use custom hook
+import { useAuth } from '../context/authContext'
 
 const OtpVerification = () => {
   const navigate = useNavigate()
@@ -13,7 +14,7 @@ const OtpVerification = () => {
   const [resendTimer, setResendTimer] = useState(0)
   const [email, setEmail] = useState('')
 
-  const { login } = useAuth() // ✅ grab login from custom hook
+  const { restoreSession } = useAuth() // ✅ grab restoreSession instead of login
 
   useEffect(() => {
     const emailData = location.state?.email || localStorage.getItem('pendingEmail')
@@ -31,9 +32,7 @@ const OtpVerification = () => {
       try {
         const statusResponse = await api.get(
           `/api/auth/check-verification-status`,
-          {
-            params: { email },
-          }
+          { params: { email } }
         );
 
         if (statusResponse.data.isPhoneNumberVerified) {
@@ -41,10 +40,7 @@ const OtpVerification = () => {
           return;
         }
 
-        await api.post(
-          `/api/auth/send-otp`,
-          { email }
-        );
+        await api.post(`/api/auth/send-otp`, { email });
 
       } catch (err) {
         console.error("OTP flow failed:", err);
@@ -91,19 +87,20 @@ const OtpVerification = () => {
       setError('')
       setSuccess('')
 
-      const response = await api.post(
-        `/api/auth/verify-otp`,
-        { email, otp: otpCode }
+      // ✅ Step 1: Verify the OTP
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/verify-otp`,
+        { email, otp: otpCode },
+        { withCredentials: true }
       )
 
-      // ✅ Grab the temp token stored during login
-      const tempAccessToken = sessionStorage.getItem('tempAccessToken')
+      // ✅ Step 2: Now call restoreSession
+      // The refreshToken cookie is already set from login
+      // This calls /api/auth/refresh → gets accessToken → sets api.accessToken
+      await restoreSession()
 
-      // ✅ Now officially log the user in — sets token + user in memory
-      login(tempAccessToken, response.data.user)
-
-      // ✅ Clean up temp storage
-      sessionStorage.removeItem('tempAccessToken')
+      // ✅ Step 3: Clean up
+      sessionStorage.removeItem('tempAccessToken') // clean up just in case
       localStorage.removeItem('pendingEmail')
 
       setSuccess('OTP verified successfully!')
@@ -130,10 +127,7 @@ const OtpVerification = () => {
       setError('')
       setSuccess('')
 
-      await api.post(
-        `/api/auth/resend-otp`,
-        { email }
-      )
+      await api.post(`/api/auth/resend-otp`, { email })
 
       setSuccess('OTP sent successfully! Check your email.')
       setResendTimer(60)
@@ -147,30 +141,22 @@ const OtpVerification = () => {
     }
   }
 
-  // JSX is unchanged below this line
+  // JSX completely unchanged
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center p-4">
-      {/* Main Container */}
       <div className="w-full max-w-md">
-        {/* Card with Shadow - PWA Optimized */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header with Logo Area */}
           <div className="bg-gradient-to-b from-orange-50 to-white px-6 pt-8 pb-6 text-center">
-            {/* Logo Icon */}
             <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-3xl font-bold text-white">🔐</span>
             </div>
-            
-            {/* Brand Name */}
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
               Verify OTP
             </h1>
             <p className="text-sm text-gray-500">Enter the 6-digit code sent to your email</p>
           </div>
 
-          {/* Content Area */}
           <div className="px-6 py-8 md:px-8 md:py-10">
-            {/* Email Display */}
             <div className="mb-6 p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <p className="text-sm text-gray-600">
                 Verification code sent to:<br />
@@ -178,23 +164,19 @@ const OtpVerification = () => {
               </p>
             </div>
 
-            {/* Success Message */}
             {success && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">
                 ✓ {success}
               </div>
             )}
 
-            {/* Error Message */}
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                 ✕ {error}
               </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* OTP Input Fields */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-4 uppercase tracking-wide">
                   Enter OTP
@@ -216,7 +198,6 @@ const OtpVerification = () => {
                 </div>
               </div>
 
-              {/* Verify Button */}
               <button
                 type="submit"
                 disabled={loading || otp.join('').length !== 6}
@@ -226,7 +207,6 @@ const OtpVerification = () => {
               </button>
             </form>
 
-            {/* Resend OTP Section */}
             <div className="mt-6 text-center border-t border-gray-200 pt-6">
               <p className="text-sm text-gray-600 mb-3">
                 {resendTimer > 0
@@ -244,7 +224,6 @@ const OtpVerification = () => {
             </div>
           </div>
 
-          {/* Footer */}
           <div className="bg-gray-50 px-6 py-5 md:px-8 border-t border-gray-200 text-center">
             <button
               type="button"
@@ -256,20 +235,13 @@ const OtpVerification = () => {
           </div>
         </div>
 
-        {/* Bottom Links - Mobile Optimized */}
         <div className="mt-6 text-center space-y-3">
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-500">
-            <a href="/privacy" className="hover:text-gray-700 transition-colors">
-              PRIVACY
-            </a>
+            <a href="/privacy" className="hover:text-gray-700 transition-colors">PRIVACY</a>
             <span className="text-gray-300">•</span>
-            <a href="/terms" className="hover:text-gray-700 transition-colors">
-              TERMS
-            </a>
+            <a href="/terms" className="hover:text-gray-700 transition-colors">TERMS</a>
             <span className="text-gray-300">•</span>
-            <a href="/support" className="hover:text-gray-700 transition-colors">
-              SUPPORT
-            </a>
+            <a href="/support" className="hover:text-gray-700 transition-colors">SUPPORT</a>
           </div>
           <p className="text-xs text-gray-400">© 2024 Digital Epicurean Portfolio</p>
         </div>
@@ -279,6 +251,3 @@ const OtpVerification = () => {
 }
 
 export default OtpVerification
-
-
-

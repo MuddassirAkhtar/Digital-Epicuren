@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/authContext'
+import api from "../utils/axiosInstance";
 
 const Login = () => {
   const navigate = useNavigate()
@@ -31,15 +32,21 @@ const Login = () => {
       { withCredentials: true } // still needed — sets the refreshToken cookie
     );
 
+
     // ✅ Store accessToken temporarily in sessionStorage
     // ONLY until OTP is verified — then we move it to memory
     // sessionStorage is safer than localStorage — cleared when tab closes
-    sessionStorage.setItem('tempAccessToken', response.data.accessToken);
+    // sessionStorage.setItem('tempAccessToken', response.data.accessToken);
+
+    // sessionStorage.removeItem('tempAccessToken'); // remove this entirely
 
     localStorage.setItem('pendingEmail', email);
 
-    // Don't call checkAuth() here anymore — user isn't fully authenticated yet
-    // OTP still needs to be verified
+   
+
+    api.accessToken = response.data.accessToken;
+
+    
 
     navigate('/verify-otp', { state: { email } });
 

@@ -72,6 +72,7 @@ export const AuthProvider = ({ children }) => {
       loading,
       isLoggedIn: !!accessToken,
       checkAuth: restoreSession,
+      restoreSession,
     }}>
       {children}
     </AuthContext.Provider>

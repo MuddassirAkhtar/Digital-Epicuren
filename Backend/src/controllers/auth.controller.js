@@ -52,37 +52,7 @@ async function registerUser(req, res) {
     },
   });
 }
-// async function loginUser(req, res) {
-//   const { email, password } = req.body;
 
-//   if (!email || !password) {
-//     return res.status(400).json({ message: "All fields are required" });
-//   }
-
-//   const user = await userModel.findOne({ email });
-
-//   if (!user) {
-//     return res.status(400).json({ message: "Invalid email or password" });
-//   }
-
-//   const isPasswordValid =  bcrypt.compare(password, user.password);
-
-//   if (!isPasswordValid) {
-//     return res.status(400).json({ message: "Invalid email or password" });
-//   }
-
-//   const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
-
-//   res.cookie("token", token);
-
-//   res.status(200).json({
-//     message: "User Logged In Successfully",
-//     user: {
-//       fullName: user.fullName,
-//       email: user.email,
-//     },
-//   });
-// }
 
 async function logoutUser(req, res) {
   res.clearCookie("token", {
@@ -145,41 +115,11 @@ async function registerPartener(req, res) {
       ownerName: partener.ownerName,
       restaurantName: partener.restaurantName,
       location: partener.location,
-      phonNumber: partner.phoneNumber,
+      phonNumber: partener.phoneNumber,
     },
   });
 }
-// async function loginPartener(req, res) {
-//   const { email, password } = req.body;
 
-//   if (!email || !password) {
-//     return res.status(400).json({ message: "All fields are required" });
-//   }
-
-//   const partener = await  partenerModel.findOne({ email });
-
-//   if (!partener) {
-//     return res.status(400).json({ message: "Invalid email or password" });
-//   }
-
-//   const isPasswordValid = await bcrypt.compare(password, partener.password);
-
-//   if (!isPasswordValid) {
-//     return res.status(400).json({ message: "Invalid email or password" });
-//   }
-
-//   const token = jwt.sign({ id: partener._id }, process.env.SECRET_KEY);
-
-//   res.cookie("token", token);
-
-//   res.status(200).json({
-//     message: "User Logged In Successfully",
-//     partener: {
-//       fullName: partener.fullName,
-//       email: partener.email,
-//     },
-//   });
-// }
 
 async function logoutPartener(req, res) {
   res.clearCookie("token", {

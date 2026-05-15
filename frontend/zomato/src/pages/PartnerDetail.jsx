@@ -35,7 +35,6 @@ const PartnerDetail = () => {
           withCredentials: true,
         }
       );
-      navigate("/cart");
     } catch (err) {
       console.error("Error adding item to cart:", err);
     }

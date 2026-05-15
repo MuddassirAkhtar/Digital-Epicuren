@@ -30,7 +30,6 @@ const [reelData, setReelData] = useState({
   foodItemId: '',
 })
 
-console.log("reelData:", reelData)
 
 
 const handleReelChange = (e) => {
@@ -161,8 +160,8 @@ useEffect(() => {
     getMenue();
   }, []);
 
-  // console.log(menue)
 
+  
 // in handleReel submit add a post request to the backend to add a new reel for the partner  and then close the form after successful submission make sure to include the video file in the request body and also include the description  , nameof the reel in the request body i will be doing it with the help of imageKit  and the api is ready just help for the frontend part 
 const handleReelSubmit = async (e) => {
   e.preventDefault()
@@ -182,7 +181,6 @@ const handleReelSubmit = async (e) => {
       credentials: "include", 
     })
     const result = await response.json()
-    console.log(" Reel Added:", result)
     setopenRellForm(false)
   } catch (error) {
     console.error(" Error:", error)
@@ -226,7 +224,7 @@ const handleReelSubmit = async (e) => {
 
 
 
-
+{/* form to add menue items  */}
     { openForm && (
       <div className="fixed inset-0  backdrop-blur-md flex items-center justify-center z-50">
         <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md">
@@ -280,10 +278,10 @@ const handleReelSubmit = async (e) => {
                   <option className='text-gray-700  ' >Other</option>
                 </select>
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700">Image</label>
                 <input   onChange={handleFileChange} name="image" type="file" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-600 file:text-white hover:file:bg-orange-700" />
-              </div>
+              </div> */}
               <div className="flex justify-between gap-4 mt-2">
                 <button type="button" className="px-5 py-3 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400 transition-colors" onClick={() => setopenForm(false)}>
                   Cancel
@@ -308,7 +306,7 @@ const handleReelSubmit = async (e) => {
                 <label className="block text-sm font-medium text-gray-700">Reel for Food Item </label>
                 <select onChange={handleReelChange} name="foodItemId" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-orange-500 focus:border-orange-500 text-black">
                   <option value="">Select a food item</option>
-                  {menue.map((item) => (
+                  {menue?.map((item) => (
                     <option key={item._id} value={item._id}>
                       {item.name}
                     </option>
@@ -432,7 +430,10 @@ const handleReelSubmit = async (e) => {
 )}
                       
                       </span>
-                      <button className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50 transition-colors">
+                      <button 
+                     onClick={() => handleInput(item._id, item.status)}
+                      className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50 transition-colors">
+                        
                         Edit
                       </button>
                     </div>

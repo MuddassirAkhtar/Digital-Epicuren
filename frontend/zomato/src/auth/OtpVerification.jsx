@@ -39,7 +39,7 @@ const OtpVerification = () => {
 
       // STEP 2: If already verified → Redirect
       if (statusResponse.data.isPhoneNumberVerified) {
-        navigate("/dashboard");
+        navigate("/");
         return;
       }
 

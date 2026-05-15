@@ -1,5 +1,5 @@
 import React, { useState ,useContext, useEffect} from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/authContext'
 
 const Profile = () => {
@@ -11,8 +11,13 @@ const Profile = () => {
   email: user?.email || '',
 })
 
+const navigate = useNavigate()
+const role = user?.role;
 
-  console.log(user)
+if(role == "partner"){
+  navigate(`/partners/${user.id}/dashboard`)
+}
+ 
   const [editData, setEditData] = useState(formData)
 
   const paymentMethods = [
@@ -59,7 +64,9 @@ useEffect(() => {
   }
 }, [user]);
 
-// console.log(user)
+
+
+
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}

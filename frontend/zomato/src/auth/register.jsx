@@ -38,13 +38,13 @@ const Register = () => {
       phoneNumber: `+91 ${formData.phoneNumber}`,
     };
 
-    // ✅ 1. Validate first
+    //  Validate the password
     if (dataToSend.password !== dataToSend.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // ✅ 2. Then remove unnecessary fields
+    //  remove unnecessary fields
     if (dataToSend.userType === "customer") {
       delete dataToSend.ownerName;
       delete dataToSend.resturentName;
@@ -59,7 +59,7 @@ const Register = () => {
       dataToSend.ownerName = toTitleCase(dataToSend.ownerName);
     }
 
-    // ✅ 3. Always remove confirmPassword before sending
+    //  remove confirmPassword before sending
     delete dataToSend.confirmPassword;
 
     try {
